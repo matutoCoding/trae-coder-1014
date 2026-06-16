@@ -1,0 +1,361 @@
+@use '@/styles/variables.scss' as *;
+
+.pageContainer {
+  padding: $page-padding;
+  background: $color-bg-page;
+}
+
+.tabs {
+  display: flex;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-xs;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.tabItem {
+  flex: 1;
+  text-align: center;
+  padding: $spacing-md 0;
+  border-radius: $radius-md;
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  transition: all $transition-base;
+}
+
+.tabActive {
+  background: $color-primary;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.warningCard {
+  background: linear-gradient(135deg, #FF7D00 0%, #FF9500 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: 0 4rpx 16rpx rgba(255, 125, 0, 0.25);
+}
+
+.warningHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+}
+
+.warningIcon {
+  font-size: 48rpx;
+  margin-right: $spacing-md;
+}
+
+.warningInfo {
+  flex: 1;
+}
+
+.warningName {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  line-height: 1.4;
+}
+
+.warningLevel {
+  font-size: $font-size-md;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4rpx $spacing-md;
+  border-radius: $radius-round;
+  line-height: 1.4;
+  margin-top: $spacing-xs;
+  display: inline-block;
+}
+
+.warningDetails {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: $radius-md;
+  padding: $spacing-md;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-xs 0;
+}
+
+.detailLabel {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+}
+
+.detailValue {
+  font-size: $font-size-sm;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+  line-height: 1.5;
+}
+
+.sectionCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  line-height: 1.4;
+  margin-bottom: $spacing-md;
+}
+
+.affectedArea {
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  margin-bottom: $spacing-sm;
+}
+
+.affectedHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-xs;
+}
+
+.affectedName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  line-height: 1.4;
+}
+
+.riskBadge {
+  font-size: $font-size-xs;
+  padding: 4rpx $spacing-sm;
+  border-radius: $radius-round;
+  font-weight: $font-weight-medium;
+  line-height: 1.4;
+}
+
+.riskDanger {
+  background: #FFECE8;
+  color: #F53F3F;
+}
+
+.riskWarning {
+  background: #FFF7E6;
+  color: #FF7D00;
+}
+
+.affectedInfo {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}
+
+.adviceItem {
+  display: flex;
+  align-items: flex-start;
+  padding: 6rpx 0;
+}
+
+.adviceDot {
+  width: 12rpx;
+  height: 12rpx;
+  background: $color-primary;
+  border-radius: $radius-round;
+  margin-right: $spacing-sm;
+  margin-top: 12rpx;
+  flex-shrink: 0;
+}
+
+.adviceText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}
+
+.statsRow {
+  display: flex;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.statCard {
+  flex: 1;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  text-align: center;
+}
+
+.statValue {
+  font-size: 36rpx;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  line-height: 1.2;
+}
+
+.statUnit {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  font-weight: $font-weight-normal;
+  margin-left: 4rpx;
+}
+
+.statLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-top: $spacing-xs;
+  line-height: 1.4;
+}
+
+.progressBar {
+  height: 16rpx;
+  background: $color-divider;
+  border-radius: $radius-round;
+  overflow: hidden;
+  margin-bottom: $spacing-xs;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, $color-primary, $color-primary-light);
+  border-radius: $radius-round;
+  transition: width $transition-base;
+}
+
+.progressText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.4;
+  margin-bottom: $spacing-md;
+  display: block;
+}
+
+.taskCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-sm;
+  box-shadow: $shadow-card;
+}
+
+.taskHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+}
+
+.taskName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.taskStatus {
+  font-size: $font-size-xs;
+  padding: 6rpx $spacing-md;
+  border-radius: $radius-round;
+  font-weight: $font-weight-medium;
+  line-height: 1.4;
+}
+
+.taskDone {
+  background: #E8FBF2;
+  color: #00B42A;
+}
+
+.taskDoing {
+  background: #E6F7FF;
+  color: #0077B6;
+}
+
+.taskPending {
+  background: #FFF7E6;
+  color: #FF7D00;
+}
+
+.taskMeta {
+  display: flex;
+  gap: $spacing-xl;
+}
+
+.taskArea {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.4;
+}
+
+.taskAssignee {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.4;
+}
+
+.supplyCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-sm;
+  box-shadow: $shadow-card;
+}
+
+.supplyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+}
+
+.supplyName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  line-height: 1.4;
+}
+
+.supplyStatus {
+  font-size: $font-size-xs;
+  padding: 6rpx $spacing-md;
+  border-radius: $radius-round;
+  font-weight: $font-weight-medium;
+  line-height: 1.4;
+}
+
+.supplySufficient {
+  background: #E8FBF2;
+  color: #00B42A;
+}
+
+.supplyShortage {
+  background: #FFECE8;
+  color: #F53F3F;
+}
+
+.supplyMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.supplyQty {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.4;
+}
+
+.supplyLocation {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  line-height: 1.4;
+}

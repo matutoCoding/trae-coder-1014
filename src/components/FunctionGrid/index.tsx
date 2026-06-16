@@ -13,7 +13,11 @@ const FunctionGrid: React.FC<FunctionGridProps> = ({ items, columns = 4 }) => {
   const handleClick = (item: FunctionItem) => {
     console.log('[FunctionGrid] click:', item.key, item.path);
     if (item.path) {
-      Taro.navigateTo({ url: item.path });
+      if (item.path.startsWith('switchTab:')) {
+        Taro.switchTab({ url: item.path.replace('switchTab:', '') });
+      } else {
+        Taro.navigateTo({ url: item.path });
+      }
     }
   };
 

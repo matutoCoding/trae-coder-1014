@@ -93,6 +93,29 @@
   color: #86909C;
 }
 
+.qualityTag {
+  display: inline-flex;
+  padding: 4rpx $spacing-sm;
+  border-radius: $radius-xs;
+  font-size: $font-size-xs;
+  line-height: 1.4;
+}
+
+.qualityExcellent {
+  background: #E8FBF2;
+  color: #00B42A;
+}
+
+.qualityGood {
+  background: #E6F7FF;
+  color: #0077B6;
+}
+
+.qualityNormal {
+  background: #F2F3F5;
+  color: #86909C;
+}
+
 .listContainer {
   background: $color-bg-card;
   border-radius: $radius-lg;

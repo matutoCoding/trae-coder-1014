@@ -20,7 +20,7 @@ const FarmingPage: React.FC = () => {
     { key: 'seedling', name: '育苗管理', path: '/pages/seedling/index', bgColor: '#E6F7FF', textColor: '#0077B6' },
     { key: 'mariculture', name: '挂养登记', path: '/pages/mariculture/index', bgColor: '#E8FBF2', textColor: '#00B42A' },
     { key: 'monitor', name: '监测记录', path: '/pages/mariculture/index', bgColor: '#FFF7E6', textColor: '#FF7D00' },
-    { key: 'typhoon', name: '台风应对', path: '', bgColor: '#FFECE8', textColor: '#F53F3F' }
+    { key: 'typhoon', name: '台风应对', path: '/pages/typhoon/index', bgColor: '#FFECE8', textColor: '#F53F3F' }
   ];
 
   const getTypeClass = (type: string) => {

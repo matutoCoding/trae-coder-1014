@@ -19,7 +19,7 @@ interface MenuItem {
 const MinePage: React.FC = () => {
   const menuItems: MenuItem[] = [
     { key: 'cost', icon: '💰', text: '成本核算', path: '/pages/cost/index', bgColor: '#FFF7E6' },
-    { key: 'seaArea', icon: '🗺️', text: '海区台账', path: '', bgColor: '#E6F7FF' },
+    { key: 'seaArea', icon: '🗺️', text: '海区台账', path: '/pages/seaArea/index', bgColor: '#E6F7FF' },
     { key: 'employee', icon: '👥', text: '员工管理', path: '', bgColor: '#E8FBF2' },
     { key: 'report', icon: '📈', text: '经营报表', path: '/pages/cost/index', bgColor: '#F3E8FF' },
     { key: 'quality', icon: '✅', text: '品质追溯', path: '', bgColor: '#E6FFFB' },

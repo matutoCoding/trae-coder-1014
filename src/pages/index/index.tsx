@@ -19,10 +19,10 @@ const IndexPage: React.FC = () => {
     { key: 'mariculture', name: '海上养殖', path: '/pages/mariculture/index', bgColor: '#E8FBF2', textColor: '#00B42A' },
     { key: 'harvest', name: '采收记录', path: '/pages/harvest/index', bgColor: '#FFF7E6', textColor: '#FF7D00' },
     { key: 'drying', name: '晾晒加工', path: '/pages/drying/index', bgColor: '#F3E8FF', textColor: '#722ED1' },
-    { key: 'monitor', name: '水温监测', path: '/pages/mariculture/index', bgColor: '#E6FFFB', textColor: '#00B42A' },
-    { key: 'typhoon', name: '台风应对', path: '', bgColor: '#FFECE8', textColor: '#F53F3F' },
+    { key: 'seaArea', name: '海区台账', path: '/pages/seaArea/index', bgColor: '#E6FFFB', textColor: '#00B42A' },
+    { key: 'typhoon', name: '台风应对', path: '/pages/typhoon/index', bgColor: '#FFECE8', textColor: '#F53F3F' },
     { key: 'cost', name: '成本核算', path: '/pages/cost/index', bgColor: '#FFF0E6', textColor: '#FF7D00' },
-    { key: 'order', name: '订单管理', path: '/pages/sales/index', bgColor: '#E6F0FF', textColor: '#0077B6' }
+    { key: 'order', name: '订单管理', path: 'switchTab:/pages/sales/index', bgColor: '#E6F0FF', textColor: '#0077B6' }
   ];
 
   const onPullDownRefresh = () => {
@@ -160,7 +160,7 @@ const IndexPage: React.FC = () => {
       <SectionCard
         title="海区状态"
         subtitle="实时监测各养殖区状态"
-        extra={<Text className={styles.viewAll}>查看全部</Text>}
+        extra={<Text className={styles.viewAll} onClick={() => Taro.navigateTo({ url: '/pages/seaArea/index' })}>查看全部</Text>}
       >
         <View className={styles.seaAreaList}>
           {seaAreaList.slice(0, 3).map(area => (

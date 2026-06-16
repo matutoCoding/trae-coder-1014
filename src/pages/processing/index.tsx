@@ -8,7 +8,7 @@ import StatCard from '@/components/StatCard';
 import ListItem from '@/components/ListItem';
 import FunctionGrid from '@/components/FunctionGrid';
 import { dryingRecordList, finishedProductList } from '@/data/processing';
-import { harvestSummary } from '@/data/harvest';
+import { harvestRecordList, harvestSummary } from '@/data/harvest';
 import { FunctionItem } from '@/types';
 import classnames from 'classnames';
 
@@ -54,6 +54,14 @@ const ProcessingPage: React.FC = () => {
     superGrade: finishedProductList.filter(p => p.grade === '特级').reduce((sum, p) => sum + p.totalWeight, 0)
   };
 
+  const getQualityClass = (q: string) => {
+    switch (q) {
+      case '优': return styles.qualityExcellent;
+      case '良': return styles.qualityGood;
+      default: return styles.qualityNormal;
+    }
+  };
+
   const renderHarvest = () => (
     <>
       <View className={styles.summaryGrid}>
@@ -90,26 +98,26 @@ const ProcessingPage: React.FC = () => {
           color="#0077B6"
         />
       </View>
-      <SectionCard title="采收记录" subtitle="最近采收情况">
+      <SectionCard title="采收记录" subtitle={`共${harvestRecordList.length}条采收记录`}>
         <View className={styles.listContainer} style={{ padding: 0, boxShadow: 'none' }}>
-          {dryingRecordList.slice(0, 4).map(record => (
+          {harvestRecordList.map(record => (
             <ListItem
               key={record.id}
               title={
                 <View style={{ display: 'flex', alignItems: 'center' }}>
                   <Text className={classnames(styles.typeTag, getTypeClass(record.type))}>{record.type}</Text>
-                  <Text>批次 {record.batchNo}</Text>
+                  <Text>{record.seaAreaName}</Text>
                 </View>
               }
-              subtitle={`投料${record.inputQuantity}${record.inputUnit} → 产出${record.outputQuantity}${record.outputUnit}`}
-              desc={`加工时间:${record.startTime} ~ ${record.endTime}`}
+              subtitle={`采收${record.quantity}${record.unit} · 品质${record.quality} · 操作员:${record.operator}`}
+              desc={`采收日期:${record.harvestDate}`}
               tags={[{
-                text: record.processType,
-                bgColor: record.processType === '晾晒' ? '#FFF7E6' : '#F3E8FF',
-                textColor: record.processType === '晾晒' ? '#FF7D00' : '#722ED1'
+                text: record.quality,
+                bgColor: record.quality === '优' ? '#E8FBF2' : record.quality === '良' ? '#E6F7FF' : '#F2F3F5',
+                textColor: record.quality === '优' ? '#00B42A' : record.quality === '良' ? '#0077B6' : '#86909C'
               }]}
               onClick={() => {
-                console.log('[Processing] click harvest record:', record.batchNo);
+                console.log('[Processing] click harvest record:', record.id);
                 Taro.navigateTo({ url: '/pages/harvest/index' });
               }}
             />

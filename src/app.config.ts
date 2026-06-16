@@ -9,7 +9,9 @@ export default defineAppConfig({
     'pages/mariculture/index',
     'pages/harvest/index',
     'pages/drying/index',
-    'pages/cost/index'
+    'pages/cost/index',
+    'pages/seaArea/index',
+    'pages/typhoon/index'
   ],
   window: {
     backgroundTextStyle: 'light',

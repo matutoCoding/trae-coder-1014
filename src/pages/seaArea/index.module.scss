@@ -1,0 +1,181 @@
+@use '@/styles/variables.scss' as *;
+
+.pageContainer {
+  padding: $page-padding;
+  background: $color-bg-page;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.typhoonBanner {
+  background: linear-gradient(135deg, #FF7D00 0%, #FF9500 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: 0 4rpx 16rpx rgba(255, 125, 0, 0.25);
+}
+
+.typhoonHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+}
+
+.typhoonIcon {
+  font-size: 44rpx;
+  margin-right: $spacing-md;
+}
+
+.typhoonInfo {
+  flex: 1;
+}
+
+.typhoonName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  line-height: 1.4;
+}
+
+.typhoonDetail {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.5;
+}
+
+.typhoonTime {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.4;
+}
+
+.areaCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.cardHeader {
+  margin-bottom: $spacing-md;
+}
+
+.cardTitleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-xs;
+}
+
+.areaName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  line-height: 1.4;
+}
+
+.areaType {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.4;
+}
+
+.statusBadge {
+  font-size: $font-size-xs;
+  padding: 6rpx $spacing-md;
+  border-radius: $radius-round;
+  font-weight: $font-weight-medium;
+  line-height: 1.4;
+}
+
+.statusNormal {
+  background: #E8FBF2;
+  color: #00B42A;
+}
+
+.statusWarning {
+  background: #FFF7E6;
+  color: #FF7D00;
+}
+
+.statusDanger {
+  background: #FFECE8;
+  color: #F53F3F;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-sm $spacing-md;
+  margin-bottom: $spacing-md;
+  padding: $spacing-md;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.infoLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  line-height: 1.4;
+}
+
+.infoValue {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  line-height: 1.5;
+  margin-top: 4rpx;
+}
+
+.areaDesc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.6;
+  margin-bottom: $spacing-md;
+}
+
+.adviceSection {
+  border-top: 1rpx solid $color-divider;
+  padding-top: $spacing-md;
+}
+
+.adviceTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  line-height: 1.5;
+  margin-bottom: $spacing-sm;
+}
+
+.adviceItem {
+  display: flex;
+  align-items: flex-start;
+  padding: 6rpx 0;
+}
+
+.adviceDot {
+  width: 12rpx;
+  height: 12rpx;
+  background: $color-primary;
+  border-radius: $radius-round;
+  margin-right: $spacing-sm;
+  margin-top: 12rpx;
+  flex-shrink: 0;
+}
+
+.adviceText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}

@@ -6,7 +6,7 @@ import SectionCard from '@/components/SectionCard';
 import { orderList, salesStats } from '@/data/sales';
 import classnames from 'classnames';
 
-type TabType = 'all' | 'pending' | 'shipped' | 'completed';
+type TabType = 'all' | 'pending' | 'shipped' | 'completed' | 'cancelled';
 
 const SalesPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('all');
@@ -34,7 +34,8 @@ const SalesPage: React.FC = () => {
     switch (activeTab) {
       case 'pending': return orderList.filter(o => o.status === '待发货');
       case 'shipped': return orderList.filter(o => o.status === '已发货');
-      case 'completed': return orderList.filter(o => o.status === '已完成' || o.status === '已取消');
+      case 'completed': return orderList.filter(o => o.status === '已完成');
+      case 'cancelled': return orderList.filter(o => o.status === '已取消');
       default: return orderList;
     }
   };
@@ -95,6 +96,7 @@ const SalesPage: React.FC = () => {
         <Text className={classnames(styles.tabItem, activeTab === 'pending' && styles.tabActive)} onClick={() => setActiveTab('pending')}>待发货</Text>
         <Text className={classnames(styles.tabItem, activeTab === 'shipped' && styles.tabActive)} onClick={() => setActiveTab('shipped')}>已发货</Text>
         <Text className={classnames(styles.tabItem, activeTab === 'completed' && styles.tabActive)} onClick={() => setActiveTab('completed')}>已完成</Text>
+        <Text className={classnames(styles.tabItem, activeTab === 'cancelled' && styles.tabActive)} onClick={() => setActiveTab('cancelled')}>已取消</Text>
       </View>
 
       {filteredOrders.map(order => (
