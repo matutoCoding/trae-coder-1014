@@ -17,7 +17,6 @@ type TabType = 'harvest' | 'drying' | 'product';
 
 const ProcessingPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('harvest');
-  const [expandedHarvestId, setExpandedHarvestId] = useState<string | null>(null);
 
   const functionItems: FunctionItem[] = [
     { key: 'harvest', name: '采收登记', path: '/pages/harvest/index', bgColor: '#FFF7E6', textColor: '#FF7D00' },
@@ -114,30 +113,30 @@ const ProcessingPage: React.FC = () => {
           color="#00B42A"
         />
       </View>
-      <SectionCard title="采收记录 · 加工追溯" subtitle={`共${harvestRecordList.length}条 · 点击卡片展开查看加工详情`}>
+      <SectionCard title="采收记录 · 加工追溯" subtitle={`共${harvestRecordList.length}条 · 点击卡片查看完整批次档案`}>
         <View className={styles.listContainer} style={{ padding: 0, boxShadow: 'none' }}>
           {harvestRecordList.map(record => {
             const trace = getTraceStatus(record.id);
             const statusInfo = getStatusInfo(trace?.status);
-            const isExpanded = expandedHarvestId === record.id;
             const dryingRecord = trace?.dryingId ? dryingRecordList.find(d => d.id === trace.dryingId) : null;
             const productRecord = trace?.productId ? finishedProductList.find(p => p.id === trace.productId) : null;
-            const stockItems = trace?.status === 'in_stock'
-              ? inventoryList.filter(i => i.type === record.type)
+            const stockItems = trace?.status === 'in_stock' && trace.inventoryId
+              ? inventoryList.filter(i => i.id === trace.inventoryId)
               : [];
             return (
-              <View className={styles.harvestTraceCard} key={record.id}>
-                <View
-                  className={styles.harvestHeader}
-                  onClick={() => setExpandedHarvestId(isExpanded ? null : record.id)}
-                >
+              <View
+                className={styles.harvestTraceCard}
+                key={record.id}
+                onClick={() => Taro.navigateTo({ url: `/pages/harvestTrace/index?id=${record.id}` })}
+              >
+                <View className={styles.harvestHeader}>
                   <View className={styles.harvestTitle}>
                     <Text className={classnames(styles.typeTag, getTypeClass(record.type))}>{record.type}</Text>
                     <Text className={styles.harvestArea}>{record.seaAreaName}</Text>
                   </View>
                   <View className={styles.harvestHeaderRight}>
                     <Text className={styles.harvestStatus} style={{ color: statusInfo.color }}>● {statusInfo.text}</Text>
-                    <Text className={styles.expandArrow}>{isExpanded ? '▲' : '▼'}</Text>
+                    <Text className={styles.expandArrow}>›</Text>
                   </View>
                 </View>
                 <Text className={styles.harvestSubtitle}>
@@ -171,185 +170,92 @@ const ProcessingPage: React.FC = () => {
                   </View>
                 </View>
 
-                {isExpanded && (
-                  <View className={styles.traceDetail}>
+                <View className={styles.traceDetail}>
+                  {dryingRecord && (
                     <View className={styles.traceDetailBlock}>
                       <View className={styles.traceDetailTitle}>
-                        <Text className={styles.traceDetailIcon}>🧺</Text>
-                        <Text className={styles.traceDetailName}>采收记录</Text>
+                        <Text className={styles.traceDetailIcon}>☀️</Text>
+                        <Text className={styles.traceDetailName}>{dryingRecord.processType}加工</Text>
+                        <Text className={classnames(styles.traceDetailTag, styles.tagOk)}>{dryingRecord.endTime ? '已完成' : '进行中'}</Text>
+                      </View>
+                      <View className={styles.traceDetailGrid}>
+                        <View className={styles.detailCell}>
+                          <Text className={styles.detailCellLabel}>加工方式</Text>
+                          <Text className={styles.detailCellValue}>{dryingRecord.processType}</Text>
+                        </View>
+                        <View className={styles.detailCell}>
+                          <Text className={styles.detailCellLabel}>开始时间</Text>
+                          <Text className={styles.detailCellValue}>{dryingRecord.startTime}</Text>
+                        </View>
+                        <View className={styles.detailCell}>
+                          <Text className={styles.detailCellLabel}>完成时间</Text>
+                          <Text className={styles.detailCellValue}>{dryingRecord.endTime}</Text>
+                        </View>
+                        <View className={styles.detailCell}>
+                          <Text className={styles.detailCellLabel}>产出率</Text>
+                          <Text className={styles.detailCellValue}>
+                            {Math.round((dryingRecord.outputQuantity / dryingRecord.inputQuantity) * 100)}%
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                  )}
+
+                  {productRecord && (
+                    <View className={styles.traceDetailBlock}>
+                      <View className={styles.traceDetailTitle}>
+                        <Text className={styles.traceDetailIcon}>📦</Text>
+                        <Text className={styles.traceDetailName}>分级打包</Text>
                         <Text className={classnames(styles.traceDetailTag, styles.tagOk)}>已完成</Text>
                       </View>
                       <View className={styles.traceDetailGrid}>
                         <View className={styles.detailCell}>
-                          <Text className={styles.detailCellLabel}>采收海区</Text>
-                          <Text className={styles.detailCellValue}>{record.seaAreaName}</Text>
+                          <Text className={styles.detailCellLabel}>等级</Text>
+                          <Text className={styles.detailCellValue}>{productRecord.grade}</Text>
                         </View>
                         <View className={styles.detailCell}>
-                          <Text className={styles.detailCellLabel}>采收量</Text>
-                          <Text className={styles.detailCellValue}>{record.quantity}{record.unit}</Text>
+                          <Text className={styles.detailCellLabel}>总重量</Text>
+                          <Text className={styles.detailCellValue}>{productRecord.totalWeight}{productRecord.unit}</Text>
                         </View>
                         <View className={styles.detailCell}>
-                          <Text className={styles.detailCellLabel}>品质</Text>
-                          <Text className={styles.detailCellValue}>{record.quality}</Text>
+                          <Text className={styles.detailCellLabel}>包装规格</Text>
+                          <Text className={styles.detailCellValue}>{productRecord.packageSpec}</Text>
                         </View>
                         <View className={styles.detailCell}>
-                          <Text className={styles.detailCellLabel}>操作员</Text>
-                          <Text className={styles.detailCellValue}>{record.operator}</Text>
-                        </View>
-                        <View className={styles.detailCell}>
-                          <Text className={styles.detailCellLabel}>采收日期</Text>
-                          <Text className={styles.detailCellValue}>{record.harvestDate}</Text>
-                        </View>
-                        <View className={styles.detailCell}>
-                          <Text className={styles.detailCellLabel}>批次备注</Text>
-                          <Text className={styles.detailCellValue}>{record.remark || '-'}</Text>
+                          <Text className={styles.detailCellLabel}>存储库位</Text>
+                          <Text className={styles.detailCellValue}>{productRecord.storageLocation}</Text>
                         </View>
                       </View>
                     </View>
+                  )}
 
-                    {dryingRecord ? (
-                      <View className={styles.traceDetailBlock}>
-                        <View className={styles.traceDetailTitle}>
-                          <Text className={styles.traceDetailIcon}>☀️</Text>
-                          <Text className={styles.traceDetailName}>晾晒/烘干批次</Text>
-                          <Text className={classnames(styles.traceDetailTag, styles.tagOk)}>已完成</Text>
-                        </View>
-                        <View className={styles.traceDetailGrid}>
-                          <View className={styles.detailCell}>
-                            <Text className={styles.detailCellLabel}>加工批次号</Text>
-                            <Text className={styles.detailCellValue}>{dryingRecord.batchNo}</Text>
-                          </View>
-                          <View className={styles.detailCell}>
-                            <Text className={styles.detailCellLabel}>加工方式</Text>
-                            <Text className={styles.detailCellValue}>{dryingRecord.processType}</Text>
-                          </View>
-                          <View className={styles.detailCell}>
-                            <Text className={styles.detailCellLabel}>投料量</Text>
-                            <Text className={styles.detailCellValue}>{dryingRecord.inputQuantity}{dryingRecord.inputUnit}</Text>
-                          </View>
-                          <View className={styles.detailCell}>
-                            <Text className={styles.detailCellLabel}>产出量</Text>
-                            <Text className={styles.detailCellValue}>{dryingRecord.outputQuantity}{dryingRecord.outputUnit}</Text>
-                          </View>
-                          <View className={styles.detailCell}>
-                            <Text className={styles.detailCellLabel}>产出率</Text>
-                            <Text className={styles.detailCellValue}>
-                              {Math.round((dryingRecord.outputQuantity / dryingRecord.inputQuantity) * 100)}%
-                            </Text>
-                          </View>
-                          <View className={styles.detailCell}>
-                            <Text className={styles.detailCellLabel}>操作员</Text>
-                            <Text className={styles.detailCellValue}>{dryingRecord.operator}</Text>
-                          </View>
-                          <View className={styles.detailCell}>
-                            <Text className={styles.detailCellLabel}>开始日期</Text>
-                            <Text className={styles.detailCellValue}>{dryingRecord.startDate}</Text>
-                          </View>
-                          <View className={styles.detailCell}>
-                            <Text className={styles.detailCellLabel}>完成日期</Text>
-                            <Text className={styles.detailCellValue}>{dryingRecord.completeDate || '进行中'}</Text>
-                          </View>
-                        </View>
+                  {stockItems.length > 0 && (
+                    <View className={styles.traceDetailBlock}>
+                      <View className={styles.traceDetailTitle}>
+                        <Text className={styles.traceDetailIcon}>🏬</Text>
+                        <Text className={styles.traceDetailName}>入库库存</Text>
+                        <Text className={classnames(styles.traceDetailTag, styles.tagOk)}>已入库</Text>
                       </View>
-                    ) : trace && ['drying', 'packed', 'in_stock'].includes(trace.status) ? null : (
-                      <View className={styles.traceDetailBlock}>
-                        <View className={styles.traceDetailTitle}>
-                          <Text className={styles.traceDetailIcon}>☀️</Text>
-                          <Text className={styles.traceDetailName}>晾晒/烘干批次</Text>
-                          <Text className={classnames(styles.traceDetailTag, styles.tagPending)}>待开始</Text>
-                        </View>
-                        <Text className={styles.traceDetailEmpty}>尚未进入晾晒/烘干工序</Text>
-                      </View>
-                    )}
-
-                    {productRecord ? (
-                      <View className={styles.traceDetailBlock}>
-                        <View className={styles.traceDetailTitle}>
-                          <Text className={styles.traceDetailIcon}>📦</Text>
-                          <Text className={styles.traceDetailName}>分级打包批次</Text>
-                          <Text className={classnames(styles.traceDetailTag, styles.tagOk)}>已完成</Text>
-                        </View>
-                        <View className={styles.traceDetailGrid}>
-                          <View className={styles.detailCell}>
-                            <Text className={styles.detailCellLabel}>打包批次号</Text>
-                            <Text className={styles.detailCellValue}>{productRecord.batchNo}</Text>
-                          </View>
-                          <View className={styles.detailCell}>
-                            <Text className={styles.detailCellLabel}>品类等级</Text>
-                            <Text className={styles.detailCellValue}>{productRecord.type} · {productRecord.grade}</Text>
-                          </View>
-                          <View className={styles.detailCell}>
-                            <Text className={styles.detailCellLabel}>包装规格</Text>
-                            <Text className={styles.detailCellValue}>{productRecord.packageSpec}</Text>
-                          </View>
-                          <View className={styles.detailCell}>
-                            <Text className={styles.detailCellLabel}>包装件数</Text>
-                            <Text className={styles.detailCellValue}>{productRecord.packageCount}件</Text>
-                          </View>
-                          <View className={styles.detailCell}>
-                            <Text className={styles.detailCellLabel}>总重量</Text>
-                            <Text className={styles.detailCellValue}>{productRecord.totalWeight}{productRecord.unit}</Text>
-                          </View>
-                          <View className={styles.detailCell}>
-                            <Text className={styles.detailCellLabel}>打包日期</Text>
-                            <Text className={styles.detailCellValue}>{productRecord.packageDate}</Text>
-                          </View>
-                          <View className={styles.detailCell}>
-                            <Text className={styles.detailCellLabel}>存储库位</Text>
-                            <Text className={styles.detailCellValue}>{productRecord.storageLocation}</Text>
-                          </View>
-                          <View className={styles.detailCell}>
-                            <Text className={styles.detailCellLabel}>质检员</Text>
-                            <Text className={styles.detailCellValue}>{productRecord.inspector || '-'}</Text>
-                          </View>
-                        </View>
-                      </View>
-                    ) : trace && ['packed', 'in_stock'].includes(trace.status) ? null : (
-                      <View className={styles.traceDetailBlock}>
-                        <View className={styles.traceDetailTitle}>
-                          <Text className={styles.traceDetailIcon}>📦</Text>
-                          <Text className={styles.traceDetailName}>分级打包批次</Text>
-                          <Text className={classnames(styles.traceDetailTag, styles.tagPending)}>待开始</Text>
-                        </View>
-                        <Text className={styles.traceDetailEmpty}>尚未进入分级打包工序</Text>
-                      </View>
-                    )}
-
-                    {trace?.status === 'in_stock' && stockItems.length > 0 ? (
-                      <View className={styles.traceDetailBlock}>
-                        <View className={styles.traceDetailTitle}>
-                          <Text className={styles.traceDetailIcon}>🏬</Text>
-                          <Text className={styles.traceDetailName}>入库库存去向</Text>
-                          <Text className={classnames(styles.traceDetailTag, styles.tagOk)}>已入库</Text>
-                        </View>
-                        <View className={styles.traceStockList}>
-                          {stockItems.map(item => (
-                            <View className={styles.traceStockItem} key={item.id}>
-                              <View className={styles.stockItemLeft}>
-                                <Text className={classnames(styles.typeTag, item.type === '紫菜' ? styles.typeLaver : styles.typeKelp)}>{item.type}</Text>
-                                <Text className={classnames(styles.gradeTag, getGradeClass(item.grade))}>{item.grade}</Text>
-                                <Text className={styles.stockItemQty}>{item.quantity}{item.unit}</Text>
-                              </View>
-                              <View className={styles.stockItemRight}>
-                                <Text className={styles.stockItemLoc}>📍 {item.warehouse}</Text>
-                                <Text className={styles.stockItemTime}>更新：{item.updateTime}</Text>
-                              </View>
+                      <View className={styles.traceStockList}>
+                        {stockItems.map(item => (
+                          <View className={styles.traceStockItem} key={item.id}>
+                            <View className={styles.stockItemLeft}>
+                              <Text className={classnames(styles.typeTag, item.type === '紫菜' ? styles.typeLaver : styles.typeKelp)}>{item.type}</Text>
+                              <Text className={classnames(styles.gradeTag, getGradeClass(item.grade))}>{item.grade}</Text>
+                              <Text className={styles.stockItemQty}>{item.quantity}{item.unit}</Text>
                             </View>
-                          ))}
-                        </View>
+                            <View className={styles.stockItemRight}>
+                              <Text className={styles.stockItemLoc}>📍 {item.warehouse}</Text>
+                              <Text className={styles.stockItemTime}>更新：{item.updateTime}</Text>
+                            </View>
+                          </View>
+                        ))}
                       </View>
-                    ) : trace?.status === 'in_stock' ? null : (
-                      <View className={styles.traceDetailBlock}>
-                        <View className={styles.traceDetailTitle}>
-                          <Text className={styles.traceDetailIcon}>🏬</Text>
-                          <Text className={styles.traceDetailName}>入库库存去向</Text>
-                          <Text className={classnames(styles.traceDetailTag, styles.tagPending)}>待入库</Text>
-                        </View>
-                        <Text className={styles.traceDetailEmpty}>成品尚未入库</Text>
-                      </View>
-                    )}
-                  </View>
-                )}
+                    </View>
+                  )}
+                </View>
+
+                <Text className={styles.detailTip}>查看完整批次档案 →</Text>
               </View>
             );
           })}

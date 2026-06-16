@@ -6,7 +6,7 @@ import { typhoonWarning, seaAreaList } from '@/data/seaArea';
 import { appStore } from '@/store/appStore';
 import classnames from 'classnames';
 
-type TabType = 'warning' | 'reinforce' | 'byArea' | 'supplies';
+type TabType = 'warning' | 'reinforce' | 'byArea' | 'daily' | 'supplies';
 
 interface SupplyItem {
   id: string;
@@ -318,20 +318,174 @@ const TyphoonPage: React.FC = () => {
     </>
   );
 
+  const renderDaily = () => {
+    const today = new Date().toLocaleDateString('zh-CN');
+    const completedToday = reinforceTasks.filter(t => t.status === 'done');
+    const pendingTotal = reinforceTasks.filter(t => t.status === 'pending');
+
+    const dailyByArea = areaTaskStats.map(areaStat => {
+      const areaInfo = seaAreaList.find(a => a.name === areaStat.area);
+      const isHighRisk = areaInfo && (areaInfo.status === 'danger' || areaInfo.status === 'warning');
+      const pendingTasks = areaStat.tasks.filter(t => t.status === 'pending');
+      const doingTasks = areaStat.tasks.filter(t => t.status === 'doing');
+      const assignees = [...new Set(areaStat.tasks.map(t => t.assignee))];
+      return {
+        ...areaStat,
+        areaInfo,
+        isHighRisk,
+        pendingTasks,
+        doingTasks,
+        assignees
+      };
+    }).sort((a, b) => {
+      if (a.isHighRisk && !b.isHighRisk) return -1;
+      if (!a.isHighRisk && b.isHighRisk) return 1;
+      return a.progress - b.progress;
+    });
+
+    return (
+      <>
+        <View className={styles.dailyHeader}>
+          <View className={styles.dailyHeaderTop}>
+            <Text className={styles.dailyDateIcon}>📅</Text>
+            <View className={styles.dailyHeaderInfo}>
+              <Text className={styles.dailyDate}>{today} 处置日报</Text>
+              <Text className={styles.dailySubtitle}>高风险海区优先 · 按完成进度排序</Text>
+            </View>
+          </View>
+          <View className={styles.dailyStatsRow}>
+            <View className={styles.dailyStatCard}>
+              <Text className={styles.dailyStatValueDone}>{completedToday.length}</Text>
+              <Text className={styles.dailyStatLabel}>今日已完成</Text>
+            </View>
+            <View className={styles.dailyStatCard}>
+              <Text className={styles.dailyStatValueDoing}>{reinforceTasks.filter(t => t.status === 'doing').length}</Text>
+              <Text className={styles.dailyStatLabel}>进行中</Text>
+            </View>
+            <View className={styles.dailyStatCard}>
+              <Text className={styles.dailyStatValuePending}>{pendingTotal.length}</Text>
+              <Text className={styles.dailyStatLabel}>仍未处理</Text>
+            </View>
+          </View>
+        </View>
+
+        {dailyByArea.map(daily => (
+          <View className={classnames(styles.dailyCard, daily.isHighRisk && styles.dailyCardHighRisk)} key={daily.area}>
+            <View className={styles.dailyCardHeader}>
+              <View className={styles.dailyCardHeaderLeft}>
+                <Text className={styles.dailyCardArea}>{daily.area}</Text>
+                {daily.isHighRisk && (
+                  <Text className={classnames(styles.riskBadge, daily.areaInfo!.status === 'danger' ? styles.riskDanger : styles.riskWarning)}>
+                    {daily.areaInfo!.status === 'danger' ? '高风险' : '中风险'}
+                  </Text>
+                )}
+              </View>
+              <View className={styles.dailyCardHeaderRight}>
+                <Text className={classnames(
+                  styles.dailyProgressBadge,
+                  daily.progress === 100 ? styles.progressAllDone :
+                  daily.progress >= 50 ? styles.progressHalf : styles.progressLow
+                )}>
+                  {daily.progress}%
+                </Text>
+              </View>
+            </View>
+
+            <View className={styles.dailyProgressBar}>
+              <View
+                className={classnames(
+                  styles.areaProgressFill,
+                  daily.progress === 100 ? styles.fillDone :
+                  daily.progress >= 50 ? styles.fillHalf : styles.fillLow
+                )}
+                style={{ width: `${daily.progress}%` }}
+              />
+            </View>
+
+            <View className={styles.dailyMetaRow}>
+              <View className={styles.dailyMetaItem}>
+                <Text className={styles.dailyMetaIcon}>✅</Text>
+                <Text className={styles.dailyMetaText}>已完成 {daily.done}/{daily.total}</Text>
+              </View>
+              <View className={styles.dailyMetaItem}>
+                <Text className={styles.dailyMetaIcon}>⏳</Text>
+                <Text className={styles.dailyMetaText}>进行中 {daily.doing}</Text>
+              </View>
+              <View className={styles.dailyMetaItem}>
+                <Text className={styles.dailyMetaIcon}>⚠️</Text>
+                <Text className={styles.dailyMetaText}>未处理 {daily.pending}</Text>
+              </View>
+            </View>
+
+            <View className={styles.dailyAssignee}>
+              <Text className={styles.dailyAssigneeLabel}>👤 负责人：</Text>
+              {daily.assignees.map((name, idx) => (
+                <Text className={styles.dailyAssigneeTag} key={idx}>{name}</Text>
+              ))}
+            </View>
+
+            {daily.pendingTasks.length > 0 && (
+              <View className={styles.dailyPendingList}>
+                <Text className={styles.dailyPendingTitle}>🔴 待闭环事项</Text>
+                {daily.pendingTasks.map(task => (
+                  <View
+                    className={styles.dailyPendingItem}
+                    key={task.id}
+                    onClick={() => handleStatusChange(task.id, task.status)}
+                  >
+                    <View className={styles.dailyPendingDot} />
+                    <Text className={styles.dailyPendingText}>{task.task}</Text>
+                    <Text className={styles.dailyPendingBtn}>标为进行中 →</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {daily.doingTasks.length > 0 && (
+              <View className={styles.dailyDoingList}>
+                <Text className={styles.dailyDoingTitle}>🟡 进行中事项</Text>
+                {daily.doingTasks.map(task => (
+                  <View
+                    className={styles.dailyDoingItem}
+                    key={task.id}
+                    onClick={() => handleStatusChange(task.id, task.status)}
+                  >
+                    <View className={styles.dailyDoingDot} />
+                    <Text className={styles.dailyDoingText}>{task.task}</Text>
+                    <Text className={styles.dailyDoingBtn}>标为完成 ✓</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {daily.progress === 100 && (
+              <View className={styles.dailyAllDone}>
+                <Text className={styles.dailyAllDoneIcon}>🎉</Text>
+                <Text className={styles.dailyAllDoneText}>该海区加固事项已全部完成</Text>
+              </View>
+            )}
+          </View>
+        ))}
+      </>
+    );
+  };
+
   return (
     <ScrollView scrollY className={styles.pageContainer} style={{ minHeight: '100vh' }}>
-      <PageHeader title="台风应对" subtitle="预警详情 · 加固事项 · 应急物资" />
+      <PageHeader title="台风应对" subtitle="预警详情 · 加固事项 · 处置日报" />
 
       <View className={styles.tabs}>
         <Text className={classnames(styles.tabItem, activeTab === 'warning' && styles.tabActive)} onClick={() => setActiveTab('warning')}>预警详情</Text>
         <Text className={classnames(styles.tabItem, activeTab === 'reinforce' && styles.tabActive)} onClick={() => setActiveTab('reinforce')}>加固事项</Text>
         <Text className={classnames(styles.tabItem, activeTab === 'byArea' && styles.tabActive)} onClick={() => setActiveTab('byArea')}>按海区汇总</Text>
+        <Text className={classnames(styles.tabItem, activeTab === 'daily' && styles.tabActive)} onClick={() => setActiveTab('daily')}>处置日报</Text>
         <Text className={classnames(styles.tabItem, activeTab === 'supplies' && styles.tabActive)} onClick={() => setActiveTab('supplies')}>应急物资</Text>
       </View>
 
       {activeTab === 'warning' && renderWarning()}
       {activeTab === 'reinforce' && renderReinforce()}
       {activeTab === 'byArea' && renderByArea()}
+      {activeTab === 'daily' && renderDaily()}
       {activeTab === 'supplies' && renderSupplies()}
     </ScrollView>
   );

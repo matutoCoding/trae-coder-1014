@@ -4,7 +4,6 @@ import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import PageHeader from '@/components/PageHeader';
 import SectionCard from '@/components/SectionCard';
-import StatCard from '@/components/StatCard';
 import { orderList, salesStats } from '@/data/sales';
 import { getInventoryQty, inventoryList } from '@/data/inventory';
 import classnames from 'classnames';
@@ -12,11 +11,25 @@ import classnames from 'classnames';
 type TabType = 'all' | 'pending' | 'shipped' | 'completed' | 'cancelled';
 
 type OccupyMap = Record<string, number>;
+type AllocationResult = {
+  orderId: string;
+  canShip: boolean;
+  allocations: Array<{
+    type: string;
+    grade: string;
+    needQty: number;
+    allocatedQty: number;
+    shortageQty: number;
+  }>;
+  totalShortage: number;
+};
 
 const buildOccupyKey = (type: string, grade: string) => `${type}-${grade}`;
 
 const SalesPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('all');
+  const [allocationResults, setAllocationResults] = useState<AllocationResult[]>([]);
+  const [hasRunAllocation, setHasRunAllocation] = useState(false);
 
   const getCustomerTypeClass = (type: string) => {
     switch (type) {
@@ -60,11 +73,85 @@ const SalesPage: React.FC = () => {
     return map;
   }, [pendingOrders.length]);
 
-  const getRemainingQty = (type: string, grade: string, needQty: number) => {
+  const getRemainingQty = (type: string, grade: string) => {
     const totalStock = getInventoryQty(type, grade);
     const allOccupied = occupiedMap[buildOccupyKey(type, grade)] || 0;
-    return Math.max(0, totalStock - allOccupied + needQty);
+    return Math.max(0, totalStock - allOccupied);
   };
+
+  const runAllocation = () => {
+    const stockLeft: Record<string, number> = {};
+    inventoryList.forEach(item => {
+      stockLeft[buildOccupyKey(item.type, item.grade)] = item.quantity;
+    });
+
+    const results: AllocationResult[] = [];
+    pendingOrders.forEach(order => {
+      const result: AllocationResult = {
+        orderId: order.id,
+        canShip: true,
+        allocations: [],
+        totalShortage: 0
+      };
+      order.products.forEach(p => {
+        const key = buildOccupyKey(p.type, p.grade);
+        const available = stockLeft[key] || 0;
+        const allocated = Math.min(available, p.quantity);
+        const shortage = p.quantity - allocated;
+        stockLeft[key] = Math.max(0, available - allocated);
+        if (shortage > 0) {
+          result.canShip = false;
+          result.totalShortage += shortage;
+        }
+        result.allocations.push({
+          type: p.type,
+          grade: p.grade,
+          needQty: p.quantity,
+          allocatedQty: allocated,
+          shortageQty: shortage
+        });
+      });
+      results.push(result);
+    });
+    setAllocationResults(results);
+    setHasRunAllocation(true);
+  };
+
+  const clearAllocation = () => {
+    setAllocationResults([]);
+    setHasRunAllocation(false);
+  };
+
+  const getAllocationResult = (orderId: string) => {
+    return allocationResults.find(r => r.orderId === orderId);
+  };
+
+  const shortageSummary = useMemo(() => {
+    if (!hasRunAllocation) return [];
+    const map: Record<string, { type: string; grade: string; need: number; have: number; shortage: number }> = {};
+    pendingOrders.forEach(order => {
+      const result = getAllocationResult(order.id);
+      if (!result) return;
+      result.allocations.forEach(a => {
+        const key = buildOccupyKey(a.type, a.grade);
+        if (!map[key]) {
+          map[key] = {
+            type: a.type,
+            grade: a.grade,
+            need: 0,
+            have: getInventoryQty(a.type, a.grade),
+            shortage: 0
+          };
+        }
+        map[key].need += a.needQty;
+        map[key].shortage += a.shortageQty;
+      });
+    });
+    return Object.values(map).filter(m => m.shortage > 0);
+  }, [hasRunAllocation, allocationResults]);
+
+  const totalShortage = shortageSummary.reduce((s, m) => s + m.shortage, 0);
+  const canShipCount = allocationResults.filter(r => r.canShip).length;
 
   const filteredOrders = getFilteredOrders();
 
@@ -103,12 +190,38 @@ const SalesPage: React.FC = () => {
       </View>
 
       <SectionCard title="📦 库存占用分析" subtitle="按产品和等级汇总待发货占用量">
+        {hasRunAllocation && shortageSummary.length > 0 && (
+          <View className={styles.shortageAlert}>
+            <Text className={styles.shortageAlertIcon}>⚠️</Text>
+            <View className={styles.shortageAlertContent}>
+              <Text className={styles.shortageAlertTitle}>
+                发货校验失败：{shortageSummary.length}类产品缺货
+              </Text>
+              {shortageSummary.map(s => (
+                <Text className={styles.shortageAlertItem} key={buildOccupyKey(s.type, s.grade)}>
+                  【{s.type} {s.grade}】需要{s.need}kg，库存仅{s.have}kg，缺{s.shortage}kg
+                </Text>
+              ))}
+            </View>
+          </View>
+        )}
+
+        {hasRunAllocation && shortageSummary.length === 0 && pendingOrders.length > 0 && (
+          <View className={styles.allSuccessAlert}>
+            <Text className={styles.successIcon}>✅</Text>
+            <Text className={styles.successText}>
+              全部{canShipCount}张待发货订单均可正常发货，库存充足
+            </Text>
+          </View>
+        )}
+
         <View className={styles.occupyGrid}>
           {inventoryList.map(item => {
             const key = buildOccupyKey(item.type, item.grade);
             const occupied = occupiedMap[key] || 0;
             const remaining = Math.max(0, item.quantity - occupied);
             const shortage = occupied > item.quantity;
+            const shortageItem = shortageSummary.find(s => s.type === item.type && s.grade === item.grade);
             return (
               <View className={classnames(styles.occupyItem, shortage && styles.occupyShortage)} key={item.id}>
                 <View className={styles.occupyHeader}>
@@ -116,7 +229,7 @@ const SalesPage: React.FC = () => {
                   <Text className={classnames(styles.invGradeTag, item.grade === '特级' ? styles.invSuper : item.grade === '一级' ? styles.invFirst : styles.invSecond)}>
                     {item.grade}
                   </Text>
-                  {shortage && <Text className={styles.shortageTag}>⚠️ 缺货</Text>}
+                  {shortage && <Text className={styles.shortageTag}>⚠️ 缺{shortageItem?.shortage || 0}kg</Text>}
                 </View>
                 <View className={styles.occupyStats}>
                   <View className={styles.occupyStat}>
@@ -146,6 +259,20 @@ const SalesPage: React.FC = () => {
             );
           })}
         </View>
+
+        {pendingOrders.length > 0 && (
+          <View className={styles.allocateActions}>
+            {!hasRunAllocation ? (
+              <Text className={styles.allocateBtn} onClick={runAllocation}>
+                🔍 按订单顺序做发货校验
+              </Text>
+            ) : (
+              <Text className={styles.clearAllocateBtn} onClick={clearAllocation}>
+                ↻ 重新校验
+              </Text>
+            )}
+          </View>
+        )}
       </SectionCard>
 
       <View className={styles.categoryRow}>
@@ -174,72 +301,101 @@ const SalesPage: React.FC = () => {
         <Text className={classnames(styles.tabItem, activeTab === 'cancelled' && styles.tabActive)} onClick={() => setActiveTab('cancelled')}>已取消</Text>
       </View>
 
-      {filteredOrders.map(order => (
-        <View className={styles.orderCard} key={order.id}>
-          <View className={styles.orderHeader}>
-            <View>
-              <Text className={styles.orderNo}>
-                {order.orderNo}
-                <Text className={classnames(styles.customerType, getCustomerTypeClass(order.customerType))}>{order.customerType}</Text>
-              </Text>
-              <Text className={styles.customerName}>{order.customerName}</Text>
+      {filteredOrders.map(order => {
+        const allocationResult = getAllocationResult(order.id);
+        return (
+          <View className={classnames(styles.orderCard, allocationResult && !allocationResult.canShip && styles.orderCardAlert)} key={order.id}>
+            <View className={styles.orderHeader}>
+              <View>
+                <Text className={styles.orderNo}>
+                  {order.orderNo}
+                  <Text className={classnames(styles.customerType, getCustomerTypeClass(order.customerType))}>{order.customerType}</Text>
+                </Text>
+                <Text className={styles.customerName}>{order.customerName}</Text>
+              </View>
+              <View className={styles.orderHeaderRight}>
+                <Text className={classnames(styles.statusTag, getStatusClass(order.status))}>{order.status}</Text>
+                {allocationResult && order.status === '待发货' && (
+                  <Text className={classnames(styles.shipCheckTag, allocationResult.canShip ? styles.shipCan : styles.shipCannot)}>
+                    {allocationResult.canShip ? '✓ 可发货' : `⚠️ 缺${allocationResult.totalShortage}kg`}
+                  </Text>
+                )}
+              </View>
             </View>
-            <Text className={classnames(styles.statusTag, getStatusClass(order.status))}>{order.status}</Text>
-          </View>
 
-          <View className={styles.productList}>
-            {order.products.map((p, idx) => {
-              const stockQty = getInventoryQty(p.type, p.grade);
-              const allOccupied = occupiedMap[buildOccupyKey(p.type, p.grade)] || 0;
-              const remaining = getRemainingQty(p.type, p.grade, p.quantity);
-              const shortage = order.status === '待发货' && remaining < p.quantity;
-              return (
-                <View className={styles.productItem} key={idx}>
-                  <View className={styles.productLeft}>
-                    <Text className={styles.productName}>{p.productName}</Text>
-                    <Text className={styles.productInfo}>{p.quantity}{p.unit} × ¥{p.unitPrice}</Text>
-                  </View>
-                  {order.status === '待发货' && (
-                    <View className={styles.stockInfo}>
-                      <View className={classnames(styles.stockTip, shortage ? styles.stockAlert : styles.stockOk)}>
-                        {shortage ? '⚠️ 库存不足' : '✓ 可发'}
-                      </View>
-                      <View className={styles.stockDetailRow}>
-                        <Text className={styles.stockDetailText}>库存:{stockQty} 待占用:{allOccupied}</Text>
-                        <Text className={classnames(styles.stockRemain, shortage && styles.stockRemainDanger)}>
-                          剩余可发:{remaining}{p.unit}
-                        </Text>
-                      </View>
+            <View className={styles.productList}>
+              {order.products.map((p, idx) => {
+                const stockQty = getInventoryQty(p.type, p.grade);
+                const allOccupied = occupiedMap[buildOccupyKey(p.type, p.grade)] || 0;
+                const remaining = getRemainingQty(p.type, p.grade) + p.quantity;
+                const shortage = order.status === '待发货' && remaining < p.quantity;
+                const alloc = allocationResult?.allocations.find(a => a.type === p.type && a.grade === p.grade);
+                return (
+                  <View className={classnames(styles.productItem, alloc && alloc.shortageQty > 0 && styles.productItemAlert)} key={idx}>
+                    <View className={styles.productLeft}>
+                      <Text className={styles.productName}>{p.productName}</Text>
+                      <Text className={styles.productInfo}>{p.quantity}{p.unit} × ¥{p.unitPrice}</Text>
                     </View>
-                  )}
-                </View>
-              );
-            })}
-          </View>
+                    {order.status === '待发货' && (
+                      <View className={styles.stockInfo}>
+                        {alloc ? (
+                          <>
+                            <View className={classnames(styles.stockTip, alloc.shortageQty > 0 ? styles.stockAlert : styles.stockOk)}>
+                              {alloc.shortageQty > 0 ? `⚠️ 缺货${alloc.shortageQty}kg` : '✓ 可发'}
+                            </View>
+                            <View className={styles.stockDetailRow}>
+                              <Text className={styles.stockDetailText}>
+                                分配{alloc.allocatedQty}kg / 需{p.quantity}kg
+                              </Text>
+                              <Text className={classnames(styles.stockRemain, alloc.shortageQty > 0 && styles.stockRemainDanger)}>
+                                库存:{stockQty}kg
+                              </Text>
+                            </View>
+                          </>
+                        ) : (
+                          <>
+                            <View className={classnames(styles.stockTip, shortage ? styles.stockAlert : styles.stockOk)}>
+                              {shortage ? '⚠️ 库存不足' : '✓ 可发'}
+                            </View>
+                            <View className={styles.stockDetailRow}>
+                              <Text className={styles.stockDetailText}>库存:{stockQty} 待占用:{allOccupied}</Text>
+                              <Text className={classnames(styles.stockRemain, shortage && styles.stockRemainDanger)}>
+                                剩余可发:{remaining}{p.unit}
+                              </Text>
+                            </View>
+                          </>
+                        )}
+                      </View>
+                    )}
+                  </View>
+                );
+              })}
+            </View>
 
-          <View className={styles.orderInfo}>
-            <View className={styles.infoRow}>
-              <Text className={styles.infoLabel}>下单时间</Text>
-              <Text className={styles.infoValue}>{order.orderDate}</Text>
-            </View>
-            <View className={styles.infoRow}>
-              <Text className={styles.infoLabel}>预计发货</Text>
-              <Text className={styles.infoValue}>{order.deliveryDate}</Text>
-            </View>
-            <View className={styles.infoRow}>
-              <Text className={styles.infoLabel}>联系人</Text>
-              <Text className={styles.infoValue}>{order.contact} · {order.phone}</Text>
-            </View>
-            <View className={styles.totalRow}>
-              <Text className={styles.totalLabel}>订单金额</Text>
-              <Text className={styles.totalValue}>
-                ¥{order.totalAmount.toLocaleString()}
-                <Text className={styles.totalUnit}>元</Text>
-              </Text>
+            <View className={styles.orderInfo}>
+              <View className={styles.infoRow}>
+                <Text className={styles.infoLabel}>下单时间</Text>
+                <Text className={styles.infoValue}>{order.orderDate}</Text>
+              </View>
+              <View className={styles.infoRow}>
+                <Text className={styles.infoLabel}>预计发货</Text>
+                <Text className={styles.infoValue}>{order.deliveryDate}</Text>
+              </View>
+              <View className={styles.infoRow}>
+                <Text className={styles.infoLabel}>联系人</Text>
+                <Text className={styles.infoValue}>{order.contact} · {order.phone}</Text>
+              </View>
+              <View className={styles.totalRow}>
+                <Text className={styles.totalLabel}>订单金额</Text>
+                <Text className={styles.totalValue}>
+                  ¥{order.totalAmount.toLocaleString()}
+                  <Text className={styles.totalUnit}>元</Text>
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
-      ))}
+        );
+      })}
     </View>
   );
 };

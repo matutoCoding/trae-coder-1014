@@ -534,3 +534,135 @@
 .stockRemainDanger {
   color: #F53F3F;
 }
+
+.shortageAlert {
+  display: flex;
+  gap: $spacing-sm;
+  background: linear-gradient(135deg, #FFECE8 0%, #FFFBF2 100%);
+  border: 2rpx solid #F53F3F;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.shortageAlertIcon {
+  font-size: 40rpx;
+  flex-shrink: 0;
+}
+
+.shortageAlertContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.shortageAlertTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: #F53F3F;
+  line-height: 1.4;
+  margin-bottom: $spacing-xs;
+}
+
+.shortageAlertItem {
+  display: block;
+  font-size: $font-size-sm;
+  color: #D92121;
+  line-height: 1.6;
+  padding-left: 16rpx;
+  position: relative;
+  &::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #F53F3F;
+  }
+}
+
+.allSuccessAlert {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  background: linear-gradient(135deg, #E8FBF2 0%, #F0FFF9 100%);
+  border: 2rpx solid #00B42A;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.successIcon {
+  font-size: 40rpx;
+  flex-shrink: 0;
+}
+
+.successText {
+  flex: 1;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: #00B42A;
+  line-height: 1.4;
+}
+
+.allocateActions {
+  margin-top: $spacing-md;
+  text-align: center;
+}
+
+.allocateBtn {
+  display: inline-block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  padding: $spacing-sm $spacing-lg;
+  border-radius: $radius-lg;
+  box-shadow: 0 4rpx 16rpx rgba(0, 119, 182, 0.3);
+  line-height: 1.4;
+}
+
+.clearAllocateBtn {
+  display: inline-block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-primary;
+  background: rgba(0, 119, 182, 0.08);
+  padding: $spacing-sm $spacing-lg;
+  border-radius: $radius-lg;
+  line-height: 1.4;
+}
+
+.orderCardAlert {
+  border: 2rpx solid #FF7D00;
+  background: linear-gradient(135deg, #FFFBF2 0%, #FFFFFF 100%);
+}
+
+.orderHeaderRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: $spacing-xs;
+}
+
+.shipCheckTag {
+  font-size: 20rpx;
+  padding: 4rpx 10rpx;
+  border-radius: $radius-xs;
+  line-height: 1.4;
+  font-weight: $font-weight-medium;
+}
+
+.shipCan {
+  background: #E8FBF2;
+  color: #00B42A;
+}
+
+.shipCannot {
+  background: #FFECE8;
+  color: #F53F3F;
+}
+
+.productItemAlert {
+  background: #FFFBF2;
+  border-radius: $radius-sm;
+  padding: $spacing-xs;
+  margin: 0 (-$spacing-xs);
+}

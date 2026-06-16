@@ -15,12 +15,12 @@ export const getInventoryQty = (type: string, grade: string) => {
 };
 
 export const processingTraceList: ProcessingTrace[] = [
-  { harvestId: '1', dryingId: '2', productId: '2', status: 'in_stock' },
-  { harvestId: '2', dryingId: '4', productId: '4', status: 'in_stock' },
-  { harvestId: '3', dryingId: '1', productId: '1', status: 'in_stock' },
-  { harvestId: '4', dryingId: '3', productId: '3', status: 'in_stock' },
-  { harvestId: '5', dryingId: '6', status: 'drying' },
-  { harvestId: '6', dryingId: '5', productId: '5', status: 'in_stock' },
+  { harvestId: '1', dryingId: '2', productId: '2', inventoryId: '5', grade: '一级', outputQuantity: 1500, orderIds: ['4'], status: 'in_stock' },
+  { harvestId: '2', dryingId: '4', productId: '4', inventoryId: '4', grade: '特级', outputQuantity: 1000, orderIds: ['2', '5'], status: 'in_stock' },
+  { harvestId: '3', dryingId: '1', productId: '1', inventoryId: '1', grade: '特级', outputQuantity: 50, orderIds: ['1', '2', '5'], status: 'in_stock' },
+  { harvestId: '4', dryingId: '3', productId: '3', inventoryId: '2', grade: '一级', outputQuantity: 36, orderIds: ['1'], status: 'in_stock' },
+  { harvestId: '5', dryingId: '6', productId: '6', inventoryId: '6', grade: '二级', outputQuantity: 6400, orderIds: ['3', '4'], status: 'in_stock' },
+  { harvestId: '6', dryingId: '5', productId: '5', inventoryId: '1', grade: '特级', outputQuantity: 32, orderIds: [], status: 'in_stock' },
   { harvestId: '7', status: 'harvested' },
   { harvestId: '8', status: 'harvested' }
 ];

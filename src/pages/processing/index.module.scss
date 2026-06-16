@@ -402,3 +402,14 @@
   margin-top: 4rpx;
   display: block;
 }
+
+.detailTip {
+  margin-top: $spacing-md;
+  padding-top: $spacing-sm;
+  border-top: 1rpx dashed $color-divider;
+  text-align: center;
+  font-size: $font-size-sm;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+  line-height: 1.4;
+}

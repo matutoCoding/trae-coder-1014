@@ -153,7 +153,11 @@ export interface ProcessingTrace {
   harvestId: string;
   dryingId?: string;
   productId?: string;
-  status: 'harvested' | 'drying' | 'packed' | 'in_stock';
+  inventoryId?: string;
+  orderIds?: string[];
+  grade?: '特级' | '一级' | '二级';
+  outputQuantity?: number;
+  status: 'harvested' | 'drying' | 'packed' | 'in_stock' | 'sold';
 }
 
 export interface ReinforceTask {

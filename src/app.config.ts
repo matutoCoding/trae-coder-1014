@@ -12,7 +12,8 @@ export default defineAppConfig({
     'pages/cost/index',
     'pages/seaArea/index',
     'pages/seaAreaDetail/index',
-    'pages/typhoon/index'
+    'pages/typhoon/index',
+    'pages/harvestTrace/index'
   ],
   window: {
     backgroundTextStyle: 'light',
