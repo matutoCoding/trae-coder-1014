@@ -228,3 +228,41 @@
   padding: $spacing-xl 0;
   line-height: 1.5;
 }
+
+.emptyState {
+  padding: $spacing-xl $spacing-md;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.emptyIcon {
+  font-size: 80rpx;
+  margin-bottom: $spacing-md;
+  opacity: 0.6;
+}
+
+.emptyTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  line-height: 1.4;
+  margin-bottom: $spacing-xs;
+}
+
+.emptyDesc {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  line-height: 1.5;
+  margin-bottom: $spacing-lg;
+}
+
+.emptyBack {
+  font-size: $font-size-sm;
+  color: $color-primary;
+  padding: $spacing-sm $spacing-lg;
+  background: rgba(0, 119, 182, 0.08);
+  border-radius: $radius-md;
+  line-height: 1.4;
+}

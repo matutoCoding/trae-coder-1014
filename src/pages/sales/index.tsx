@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text } from '@tarojs/components';
+import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import PageHeader from '@/components/PageHeader';
 import SectionCard from '@/components/SectionCard';
@@ -9,6 +10,10 @@ import { getInventoryQty, inventoryList } from '@/data/inventory';
 import classnames from 'classnames';
 
 type TabType = 'all' | 'pending' | 'shipped' | 'completed' | 'cancelled';
+
+type OccupyMap = Record<string, number>;
+
+const buildOccupyKey = (type: string, grade: string) => `${type}-${grade}`;
 
 const SalesPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('all');
@@ -42,12 +47,28 @@ const SalesPage: React.FC = () => {
     }
   };
 
+  const pendingOrders = orderList.filter(o => o.status === '待发货');
+
+  const occupiedMap = useMemo<OccupyMap>(() => {
+    const map: OccupyMap = {};
+    pendingOrders.forEach(order => {
+      order.products.forEach(p => {
+        const key = buildOccupyKey(p.type, p.grade);
+        map[key] = (map[key] || 0) + p.quantity;
+      });
+    });
+    return map;
+  }, [pendingOrders.length]);
+
+  const getRemainingQty = (type: string, grade: string, needQty: number) => {
+    const totalStock = getInventoryQty(type, grade);
+    const allOccupied = occupiedMap[buildOccupyKey(type, grade)] || 0;
+    return Math.max(0, totalStock - allOccupied + needQty);
+  };
+
   const filteredOrders = getFilteredOrders();
 
-  const pendingQty = orderList
-    .filter(o => o.status === '待发货')
-    .reduce((s, o) => s + o.products.reduce((ps, p) => ps + p.quantity, 0), 0);
-
+  const pendingQty = pendingOrders.reduce((s, o) => s + o.products.reduce((ps, p) => ps + p.quantity, 0), 0);
   const totalStock = inventoryList.reduce((s, i) => s + i.quantity, 0);
 
   return (
@@ -81,39 +102,49 @@ const SalesPage: React.FC = () => {
         </View>
       </View>
 
-      <View className={styles.stockRow}>
-        <View className={styles.stockCard}>
-          <Text className={styles.stockIcon}>📦</Text>
-          <View className={styles.stockInfo}>
-            <Text className={styles.stockValue}>{totalStock}公斤</Text>
-            <Text className={styles.stockLabel}>成品库存总量</Text>
-          </View>
-        </View>
-        <View className={classnames(styles.stockCard, pendingQty > totalStock * 0.8 && styles.stockWarn)}>
-          <Text className={styles.stockIcon}>📤</Text>
-          <View className={styles.stockInfo}>
-            <Text className={styles.stockValue}>{pendingQty}公斤</Text>
-            <Text className={styles.stockLabel}>
-              待发货需用量
-              {pendingQty > totalStock * 0.8 ? ' · ⚠️库存紧张' : ''}
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      <SectionCard title="库存明细" subtitle="下单前请确认库存是否充足">
-        <View className={styles.inventoryGrid}>
-          {inventoryList.map(item => (
-            <View className={styles.inventoryItem} key={item.id}>
-              <View className={styles.inventoryHeader}>
-                <Text className={classnames(styles.invTypeTag, item.type === '紫菜' ? styles.invLaver : styles.invKelp)}>{item.type}</Text>
-                <Text className={classnames(styles.invGradeTag, item.grade === '特级' ? styles.invSuper : item.grade === '一级' ? styles.invFirst : styles.invSecond)}>
-                  {item.grade}
-                </Text>
+      <SectionCard title="📦 库存占用分析" subtitle="按产品和等级汇总待发货占用量">
+        <View className={styles.occupyGrid}>
+          {inventoryList.map(item => {
+            const key = buildOccupyKey(item.type, item.grade);
+            const occupied = occupiedMap[key] || 0;
+            const remaining = Math.max(0, item.quantity - occupied);
+            const shortage = occupied > item.quantity;
+            return (
+              <View className={classnames(styles.occupyItem, shortage && styles.occupyShortage)} key={item.id}>
+                <View className={styles.occupyHeader}>
+                  <Text className={classnames(styles.invTypeTag, item.type === '紫菜' ? styles.invLaver : styles.invKelp)}>{item.type}</Text>
+                  <Text className={classnames(styles.invGradeTag, item.grade === '特级' ? styles.invSuper : item.grade === '一级' ? styles.invFirst : styles.invSecond)}>
+                    {item.grade}
+                  </Text>
+                  {shortage && <Text className={styles.shortageTag}>⚠️ 缺货</Text>}
+                </View>
+                <View className={styles.occupyStats}>
+                  <View className={styles.occupyStat}>
+                    <Text className={styles.occupyNum}>{item.quantity}</Text>
+                    <Text className={styles.occupyLabel}>库存总量</Text>
+                  </View>
+                  <View className={styles.occupyMinus}>−</View>
+                  <View className={styles.occupyStat}>
+                    <Text className={classnames(styles.occupyNum, styles.occupyWarn)}>{occupied}</Text>
+                    <Text className={styles.occupyLabel}>待发货占用</Text>
+                  </View>
+                  <View className={styles.occupyMinus}>=</View>
+                  <View className={styles.occupyStat}>
+                    <Text className={classnames(styles.occupyNum, shortage ? styles.occupyDanger : styles.occupyOk)}>{remaining}</Text>
+                    <Text className={styles.occupyLabel}>剩余可发</Text>
+                  </View>
+                </View>
+                <View className={styles.occupyBar}>
+                  <View className={styles.occupyBarTotal} />
+                  <View
+                    className={classnames(styles.occupyBarUsed, shortage && styles.occupyBarShort)}
+                    style={{ width: `${Math.min(100, (occupied / item.quantity) * 100)}%` }}
+                  />
+                </View>
+                <Text className={styles.occupyLoc}>📍 {item.warehouse} · 更新：{item.updateTime}</Text>
               </View>
-              <Text className={styles.inventoryQty}>{item.quantity}<Text className={styles.inventoryUnit}>{item.unit}</Text></Text>
-            </View>
-          ))}
+            );
+          })}
         </View>
       </SectionCard>
 
@@ -159,7 +190,9 @@ const SalesPage: React.FC = () => {
           <View className={styles.productList}>
             {order.products.map((p, idx) => {
               const stockQty = getInventoryQty(p.type, p.grade);
-              const stockSufficient = stockQty >= p.quantity;
+              const allOccupied = occupiedMap[buildOccupyKey(p.type, p.grade)] || 0;
+              const remaining = getRemainingQty(p.type, p.grade, p.quantity);
+              const shortage = order.status === '待发货' && remaining < p.quantity;
               return (
                 <View className={styles.productItem} key={idx}>
                   <View className={styles.productLeft}>
@@ -167,9 +200,16 @@ const SalesPage: React.FC = () => {
                     <Text className={styles.productInfo}>{p.quantity}{p.unit} × ¥{p.unitPrice}</Text>
                   </View>
                   {order.status === '待发货' && (
-                    <View className={classnames(styles.stockTip, stockSufficient ? styles.stockOk : styles.stockAlert)}>
-                      {stockSufficient ? '✓ 可发' : '⚠️ 库存不足'}
-                      <Text className={styles.stockTipQty}>（库存{stockQty}{p.unit}）</Text>
+                    <View className={styles.stockInfo}>
+                      <View className={classnames(styles.stockTip, shortage ? styles.stockAlert : styles.stockOk)}>
+                        {shortage ? '⚠️ 库存不足' : '✓ 可发'}
+                      </View>
+                      <View className={styles.stockDetailRow}>
+                        <Text className={styles.stockDetailText}>库存:{stockQty} 待占用:{allOccupied}</Text>
+                        <Text className={classnames(styles.stockRemain, shortage && styles.stockRemainDanger)}>
+                          剩余可发:{remaining}{p.unit}
+                        </Text>
+                      </View>
                     </View>
                   )}
                 </View>

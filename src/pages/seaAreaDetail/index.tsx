@@ -167,7 +167,12 @@ const SeaAreaDetailPage: React.FC = () => {
       {activeTab === 'hanging' && (
         <SectionCard title="挂养记录" subtitle={`共${hangingRecords.length}条`}>
           {hangingRecords.length === 0 ? (
-            <Text className={styles.emptyTip}>暂无挂养记录</Text>
+            <View className={styles.emptyState}>
+              <Text className={styles.emptyIcon}>🌿</Text>
+              <Text className={styles.emptyTitle}>暂无挂养记录</Text>
+              <Text className={styles.emptyDesc}>该海区尚未进行苗绳挂养</Text>
+              <Text className={styles.emptyBack} onClick={() => Taro.navigateBack()}>← 返回海区列表</Text>
+            </View>
           ) : (
             hangingRecords.map(record => (
               <ListItem
@@ -185,7 +190,12 @@ const SeaAreaDetailPage: React.FC = () => {
       {activeTab === 'monitor' && (
         <SectionCard title="水质监测记录" subtitle={`最近${monitorRecords.length}条`}>
           {monitorRecords.length === 0 ? (
-            <Text className={styles.emptyTip}>暂无监测数据</Text>
+            <View className={styles.emptyState}>
+              <Text className={styles.emptyIcon}>📊</Text>
+              <Text className={styles.emptyTitle}>暂无监测数据</Text>
+              <Text className={styles.emptyDesc}>该海区尚未进行水质监测</Text>
+              <Text className={styles.emptyBack} onClick={() => Taro.navigateBack()}>← 返回海区列表</Text>
+            </View>
           ) : (
             monitorRecords.map(record => (
               <ListItem
@@ -202,7 +212,12 @@ const SeaAreaDetailPage: React.FC = () => {
       {activeTab === 'harvest' && (
         <SectionCard title="采收记录" subtitle={`共${harvestRecords.length}条`}>
           {harvestRecords.length === 0 ? (
-            <Text className={styles.emptyTip}>暂无采收记录</Text>
+            <View className={styles.emptyState}>
+              <Text className={styles.emptyIcon}>🧺</Text>
+              <Text className={styles.emptyTitle}>暂无采收记录</Text>
+              <Text className={styles.emptyDesc}>该海区尚未进行采收作业</Text>
+              <Text className={styles.emptyBack} onClick={() => Taro.navigateBack()}>← 返回海区列表</Text>
+            </View>
           ) : (
             harvestRecords.map(record => (
               <ListItem

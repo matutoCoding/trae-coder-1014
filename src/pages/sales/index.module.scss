@@ -384,3 +384,153 @@
   opacity: 0.8;
   margin-left: 4rpx;
 }
+
+.occupyGrid {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.occupyItem {
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  border: 2rpx solid transparent;
+  transition: all $transition-base;
+}
+
+.occupyShortage {
+  background: #FFFBF2;
+  border-color: #FF7D00;
+}
+
+.occupyHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-sm;
+}
+
+.shortageTag {
+  margin-left: auto;
+  font-size: $font-size-xs;
+  background: #FFECE8;
+  color: #F53F3F;
+  padding: 4rpx 10rpx;
+  border-radius: $radius-xs;
+  line-height: 1.4;
+  font-weight: $font-weight-medium;
+}
+
+.occupyStats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-sm;
+  padding: $spacing-sm;
+  background: rgba(0, 119, 182, 0.04);
+  border-radius: $radius-sm;
+}
+
+.occupyStat {
+  text-align: center;
+  flex: 1;
+}
+
+.occupyNum {
+  font-size: 32rpx;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  line-height: 1.2;
+}
+
+.occupyWarn {
+  color: #FF7D00;
+}
+
+.occupyDanger {
+  color: #F53F3F;
+}
+
+.occupyOk {
+  color: #00B42A;
+}
+
+.occupyLabel {
+  font-size: 20rpx;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+  line-height: 1.4;
+}
+
+.occupyMinus {
+  font-size: 28rpx;
+  color: $color-text-tertiary;
+  font-weight: $font-weight-bold;
+  padding: 0 $spacing-xs;
+}
+
+.occupyBar {
+  position: relative;
+  height: 12rpx;
+  border-radius: 6rpx;
+  margin-bottom: $spacing-xs;
+  overflow: hidden;
+}
+
+.occupyBarTotal {
+  position: absolute;
+  inset: 0;
+  background: #F2F3F5;
+}
+
+.occupyBarUsed {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, #0077B6, #00B4D8);
+  border-radius: 6rpx;
+  transition: width $transition-base;
+}
+
+.occupyBarShort {
+  background: linear-gradient(90deg, #FF7D00, #F53F3F);
+}
+
+.occupyLoc {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  line-height: 1.5;
+}
+
+.stockInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4rpx;
+}
+
+.stockDetailRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2rpx;
+}
+
+.stockDetailText {
+  font-size: 20rpx;
+  color: $color-text-tertiary;
+  line-height: 1.4;
+}
+
+.stockRemain {
+  font-size: 22rpx;
+  color: #00B42A;
+  font-weight: $font-weight-medium;
+  line-height: 1.4;
+}
+
+.stockRemainDanger {
+  color: #F53F3F;
+}

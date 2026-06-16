@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
@@ -14,8 +14,19 @@ type RiskFilter = 'all' | 'normal' | 'warning' | 'danger';
 const SeaAreaPage: React.FC = () => {
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   const [riskFilter, setRiskFilter] = useState<RiskFilter>('all');
+  const [tick, setTick] = useState(0);
+
+  useEffect(() => {
+    const unsubscribe = appStore.subscribe(() => setTick(t => t + 1));
+    return unsubscribe;
+  }, []);
 
   const reinforceStats = appStore.getTaskStats();
+  const areaTaskStats = appStore.getAreaTaskStats();
+  const getAreaReinforceProgress = (areaName: string) => {
+    const found = areaTaskStats.find(s => s.area === areaName || s.area.startsWith(areaName.charAt(0)));
+    return found ? found.progress : null;
+  };
 
   const getStatusClass = (status: string) => {
     switch (status) {
@@ -165,11 +176,20 @@ const SeaAreaPage: React.FC = () => {
 
       {filteredList.length === 0 ? (
         <View className={styles.emptyTip}>
+          <Text className={styles.emptyIcon}>🔍</Text>
           <Text className={styles.emptyText}>暂无符合条件的海区</Text>
+          <Text className={styles.emptyHint}>请调整筛选条件后重试</Text>
         </View>
       ) : (
-        filteredList.map(area => {
+        <View>
+          <View className={styles.filterResultBar}>
+            <Text className={styles.filterResultText}>
+              📋 当前筛选：共 {filteredList.length} 个海区，总计 {filteredList.reduce((s, a) => s + a.area, 0)} 亩
+            </Text>
+          </View>
+          {filteredList.map(area => {
           const advice = getAdvice(area);
+          const areaProgress = getAreaReinforceProgress(area.name);
           return (
             <View
               className={classnames(styles.areaCard, area.status === 'danger' && styles.areaCardDanger, area.status === 'warning' && styles.areaCardWarning)}
@@ -227,10 +247,27 @@ const SeaAreaPage: React.FC = () => {
                 ))}
               </View>
 
+              {areaProgress !== null && (
+                <View className={styles.areaReinforceBar}>
+                  <Text className={styles.areaReinforceLabel}>🛠️ 加固进度</Text>
+                  <View className={styles.areaReinforceTrack}>
+                    <View
+                      className={classnames(
+                        styles.areaReinforceFill,
+                        areaProgress === 100 ? styles.fillDone : areaProgress >= 50 ? styles.fillHalf : styles.fillLow
+                      )}
+                      style={{ width: `${areaProgress}%` }}
+                    />
+                  </View>
+                  <Text className={styles.areaReinforcePct}>{areaProgress}%</Text>
+                </View>
+              )}
+
               <Text className={styles.detailTip}>点击查看详情 →</Text>
             </View>
           );
-        })
+        })}
+        </View>
       )}
     </ScrollView>
   );

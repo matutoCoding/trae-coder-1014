@@ -6,7 +6,7 @@ import { typhoonWarning, seaAreaList } from '@/data/seaArea';
 import { appStore } from '@/store/appStore';
 import classnames from 'classnames';
 
-type TabType = 'warning' | 'reinforce' | 'supplies';
+type TabType = 'warning' | 'reinforce' | 'byArea' | 'supplies';
 
 interface SupplyItem {
   id: string;
@@ -38,6 +38,7 @@ const TyphoonPage: React.FC = () => {
 
   const reinforceTasks = appStore.getReinforceTasks();
   const taskStats = appStore.getTaskStats();
+  const areaTaskStats = appStore.getAreaTaskStats();
 
   const supplyStats = {
     total: supplyList.length,
@@ -225,6 +226,98 @@ const TyphoonPage: React.FC = () => {
     </>
   );
 
+  const renderByArea = () => (
+    <>
+      <View className={styles.statsRow}>
+        <View className={styles.statCard}>
+          <Text className={styles.statValue}>{areaTaskStats.length}<Text className={styles.statUnit}>个</Text></Text>
+          <Text className={styles.statLabel}>涉及区域</Text>
+        </View>
+        <View className={styles.statCard}>
+          <Text className={styles.statValue}>{areaTaskStats.filter(a => a.progress === 100).length}<Text className={styles.statUnit}>个</Text></Text>
+          <Text className={styles.statLabel}>已全部完成</Text>
+        </View>
+        <View className={styles.statCard}>
+          <Text className={styles.statValue}>{areaTaskStats.filter(a => a.progress < 50).length}<Text className={styles.statUnit}>个</Text></Text>
+          <Text className={styles.statLabel}>需重点关注</Text>
+        </View>
+      </View>
+
+      <Text className={styles.progressHint}>💡 按完成进度从低到高排序，优先处理未完成的高风险海区</Text>
+
+      {areaTaskStats.map(areaStat => {
+        const areaInfo = seaAreaList.find(a => a.name === areaStat.area);
+        const isHighRisk = areaInfo && (areaInfo.status === 'danger' || areaInfo.status === 'warning');
+        return (
+          <View className={classnames(styles.areaCard, isHighRisk && styles.areaCardHighRisk)} key={areaStat.area}>
+            <View className={styles.areaHeader}>
+              <View className={styles.areaHeaderLeft}>
+                <Text className={styles.areaName}>{areaStat.area}</Text>
+                {isHighRisk && (
+                  <Text className={classnames(styles.riskBadge, areaInfo!.status === 'danger' ? styles.riskDanger : styles.riskWarning)}>
+                    {areaInfo!.status === 'danger' ? '高风险' : '中风险'}
+                  </Text>
+                )}
+              </View>
+              <Text className={classnames(
+                styles.areaProgressBadge,
+                areaStat.progress === 100 ? styles.progressAllDone :
+                areaStat.progress >= 50 ? styles.progressHalf : styles.progressLow
+              )}>
+                {areaStat.progress}%
+              </Text>
+            </View>
+            <View className={styles.areaBarRow}>
+              <View className={styles.areaProgressBar}>
+                <View
+                  className={classnames(
+                    styles.areaProgressFill,
+                    areaStat.progress === 100 ? styles.fillDone :
+                    areaStat.progress >= 50 ? styles.fillHalf : styles.fillLow
+                  )}
+                  style={{ width: `${areaStat.progress}%` }}
+                />
+              </View>
+            </View>
+            <View className={styles.areaStatsRow}>
+              <View className={styles.areaMiniStat}>
+                <Text className={styles.areaMiniNumDone}>{areaStat.done}</Text>
+                <Text className={styles.areaMiniLabel}>已完成</Text>
+              </View>
+              <View className={styles.areaMiniStat}>
+                <Text className={styles.areaMiniNumDoing}>{areaStat.doing}</Text>
+                <Text className={styles.areaMiniLabel}>进行中</Text>
+              </View>
+              <View className={styles.areaMiniStat}>
+                <Text className={styles.areaMiniNumPending}>{areaStat.pending}</Text>
+                <Text className={styles.areaMiniLabel}>待处理</Text>
+              </View>
+              <View className={styles.areaMiniStat}>
+                <Text className={styles.areaMiniNum}>{areaStat.total}</Text>
+                <Text className={styles.areaMiniLabel}>任务总计</Text>
+              </View>
+            </View>
+            {areaStat.tasks && areaStat.tasks.length > 0 && (
+              <View className={styles.areaTaskList}>
+                {areaStat.tasks.map(t => (
+                  <View className={styles.areaTaskItem} key={t.id}>
+                    <View className={styles.areaTaskDot} />
+                    <Text className={styles.areaTaskText}>{t.task}</Text>
+                    <Text className={classnames(styles.areaTaskStatus,
+                      t.status === 'done' ? styles.taskDone : t.status === 'doing' ? styles.taskDoing : styles.taskPending
+                    )}>
+                      {getStatusText(t.status)}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+        );
+      })}
+    </>
+  );
+
   return (
     <ScrollView scrollY className={styles.pageContainer} style={{ minHeight: '100vh' }}>
       <PageHeader title="台风应对" subtitle="预警详情 · 加固事项 · 应急物资" />
@@ -232,11 +325,13 @@ const TyphoonPage: React.FC = () => {
       <View className={styles.tabs}>
         <Text className={classnames(styles.tabItem, activeTab === 'warning' && styles.tabActive)} onClick={() => setActiveTab('warning')}>预警详情</Text>
         <Text className={classnames(styles.tabItem, activeTab === 'reinforce' && styles.tabActive)} onClick={() => setActiveTab('reinforce')}>加固事项</Text>
+        <Text className={classnames(styles.tabItem, activeTab === 'byArea' && styles.tabActive)} onClick={() => setActiveTab('byArea')}>按海区汇总</Text>
         <Text className={classnames(styles.tabItem, activeTab === 'supplies' && styles.tabActive)} onClick={() => setActiveTab('supplies')}>应急物资</Text>
       </View>
 
       {activeTab === 'warning' && renderWarning()}
       {activeTab === 'reinforce' && renderReinforce()}
+      {activeTab === 'byArea' && renderByArea()}
       {activeTab === 'supplies' && renderSupplies()}
     </ScrollView>
   );

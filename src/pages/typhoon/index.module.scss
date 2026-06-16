@@ -391,3 +391,155 @@
   color: $color-text-tertiary;
   line-height: 1.4;
 }
+
+.areaCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+  border: 2rpx solid transparent;
+}
+
+.areaCardHighRisk {
+  border-color: #FF7D00;
+  background: linear-gradient(135deg, #FFFBF2 0%, #FFFFFF 100%);
+}
+
+.areaHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+}
+
+.areaHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.areaName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  line-height: 1.4;
+}
+
+.areaProgressBadge {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  padding: 6rpx 16rpx;
+  border-radius: $radius-round;
+  line-height: 1.4;
+}
+
+.progressAllDone { background: #E8FBF2; color: #00B42A; }
+.progressHalf { background: #E6F7FF; color: #0077B6; }
+.progressLow { background: #FFF7E6; color: #FF7D00; }
+
+.areaBarRow {
+  margin-bottom: $spacing-sm;
+}
+
+.areaProgressBar {
+  height: 14rpx;
+  background: $color-divider;
+  border-radius: $radius-round;
+  overflow: hidden;
+}
+
+.areaProgressFill {
+  height: 100%;
+  border-radius: $radius-round;
+  transition: width $transition-base;
+}
+
+.fillDone { background: linear-gradient(90deg, #00B42A, #0FC6C2); }
+.fillHalf { background: linear-gradient(90deg, #0077B6, #00B4D8); }
+.fillLow { background: linear-gradient(90deg, #FF7D00, #F53F3F); }
+
+.areaStatsRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-xs;
+  margin-bottom: $spacing-sm;
+}
+
+.areaMiniStat {
+  text-align: center;
+  background: $color-bg-page;
+  border-radius: $radius-sm;
+  padding: $spacing-sm $spacing-xs;
+}
+
+.areaMiniNum {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  line-height: 1.2;
+}
+
+.areaMiniNumDone {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: #00B42A;
+  line-height: 1.2;
+}
+
+.areaMiniNumDoing {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: #0077B6;
+  line-height: 1.2;
+}
+
+.areaMiniNumPending {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: #FF7D00;
+  line-height: 1.2;
+}
+
+.areaMiniLabel {
+  font-size: 20rpx;
+  color: $color-text-tertiary;
+  line-height: 1.4;
+  margin-top: 4rpx;
+}
+
+.areaTaskList {
+  border-top: 1rpx solid $color-divider;
+  padding-top: $spacing-sm;
+  margin-top: $spacing-xs;
+}
+
+.areaTaskItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-xs 0;
+  gap: $spacing-xs;
+}
+
+.areaTaskDot {
+  width: 8rpx;
+  height: 8rpx;
+  background: $color-primary;
+  border-radius: $radius-round;
+  flex-shrink: 0;
+}
+
+.areaTaskText {
+  flex: 1;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.5;
+}
+
+.areaTaskStatus {
+  font-size: 20rpx;
+  padding: 4rpx 10rpx;
+  border-radius: $radius-xs;
+  flex-shrink: 0;
+  line-height: 1.4;
+}

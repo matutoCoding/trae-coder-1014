@@ -137,6 +137,19 @@
   margin-bottom: $spacing-xs;
 }
 
+.harvestHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.expandArrow {
+  font-size: 20rpx;
+  color: $color-text-tertiary;
+  line-height: 1.4;
+  transition: all $transition-base;
+}
+
 .harvestTitle {
   display: flex;
   align-items: center;
@@ -263,4 +276,129 @@
   color: $color-text-tertiary;
   line-height: 1.4;
   margin-top: 4rpx;
+}
+
+.traceDetail {
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 2rpx dashed $color-divider;
+}
+
+.traceDetailBlock {
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  margin-bottom: $spacing-sm;
+  &:last-child { margin-bottom: 0; }
+}
+
+.traceDetailTitle {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-sm;
+}
+
+.traceDetailIcon {
+  font-size: 28rpx;
+}
+
+.traceDetailName {
+  flex: 1;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  line-height: 1.4;
+}
+
+.traceDetailTag {
+  font-size: $font-size-xs;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-round;
+  line-height: 1.4;
+}
+
+.tagOk { background: #E8FBF2; color: #00B42A; }
+.tagPending { background: #F2F3F5; color: #86909C; }
+.tagDoing { background: #E6F7FF; color: #0077B6; }
+
+.traceDetailGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-xs $spacing-md;
+}
+
+.detailCell {
+  display: flex;
+  flex-direction: column;
+}
+
+.detailCellLabel {
+  font-size: 20rpx;
+  color: $color-text-tertiary;
+  line-height: 1.4;
+}
+
+.detailCellValue {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  line-height: 1.5;
+  margin-top: 4rpx;
+}
+
+.traceDetailEmpty {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  line-height: 1.5;
+  text-align: center;
+  padding: $spacing-sm 0;
+}
+
+.traceStockList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.traceStockItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: $radius-sm;
+}
+
+.stockItemLeft {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.stockItemQty {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  line-height: 1.4;
+  margin-left: $spacing-xs;
+}
+
+.stockItemRight {
+  text-align: right;
+}
+
+.stockItemLoc {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  line-height: 1.4;
+  display: block;
+}
+
+.stockItemTime {
+  font-size: 20rpx;
+  color: $color-text-tertiary;
+  line-height: 1.4;
+  margin-top: 4rpx;
+  display: block;
 }
