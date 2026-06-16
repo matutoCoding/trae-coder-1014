@@ -139,6 +139,31 @@ export interface StatItem {
   trend?: 'up' | 'down' | 'flat';
 }
 
+export interface InventoryItem {
+  id: string;
+  type: '紫菜' | '海带';
+  grade: '特级' | '一级' | '二级';
+  quantity: number;
+  unit: string;
+  warehouse: string;
+  updateTime: string;
+}
+
+export interface ProcessingTrace {
+  harvestId: string;
+  dryingId?: string;
+  productId?: string;
+  status: 'harvested' | 'drying' | 'packed' | 'in_stock';
+}
+
+export interface ReinforceTask {
+  id: string;
+  task: string;
+  status: 'pending' | 'doing' | 'done';
+  area: string;
+  assignee: string;
+}
+
 export interface FunctionItem {
   key: string;
   name: string;

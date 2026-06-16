@@ -11,6 +11,7 @@ export default defineAppConfig({
     'pages/drying/index',
     'pages/cost/index',
     'pages/seaArea/index',
+    'pages/seaAreaDetail/index',
     'pages/typhoon/index'
   ],
   window: {

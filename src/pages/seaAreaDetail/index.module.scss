@@ -1,0 +1,230 @@
+@use '@/styles/variables.scss' as *;
+
+.pageContainer {
+  padding: $page-padding;
+  background: $color-bg-page;
+}
+
+.infoCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+}
+
+.infoCardDanger {
+  border-left: 6rpx solid #F53F3F;
+  background: linear-gradient(90deg, #FFECE8 0%, $color-bg-card 20%);
+}
+
+.infoCardWarning {
+  border-left: 6rpx solid #FF7D00;
+  background: linear-gradient(90deg, #FFF7E6 0%, $color-bg-card 20%);
+}
+
+.infoHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-xs;
+}
+
+.infoTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  line-height: 1.4;
+}
+
+.statusBadge {
+  font-size: $font-size-xs;
+  padding: 6rpx $spacing-md;
+  border-radius: $radius-round;
+  font-weight: $font-weight-medium;
+  line-height: 1.4;
+}
+
+.statusNormal { background: #E8FBF2; color: #00B42A; }
+.statusWarning { background: #FFF7E6; color: #FF7D00; }
+.statusDanger { background: #FFECE8; color: #F53F3F; }
+
+.infoType {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.4;
+  margin-bottom: $spacing-md;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-sm $spacing-md;
+  margin-bottom: $spacing-md;
+  padding: $spacing-md;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.infoLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  line-height: 1.4;
+}
+
+.infoValue {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  line-height: 1.5;
+  margin-top: 4rpx;
+}
+
+.infoDesc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}
+
+.monitorCard {
+  background: linear-gradient(135deg, #0077B6 0%, #0096C7 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: 0 4rpx 16rpx rgba(0, 119, 182, 0.25);
+}
+
+.monitorCardTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+  line-height: 1.4;
+  margin-bottom: $spacing-md;
+}
+
+.monitorGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
+}
+
+.monitorItem {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: $radius-md;
+  padding: $spacing-md 0;
+}
+
+.monitorValue {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  line-height: 1.2;
+}
+
+.monitorLabel {
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.4;
+  margin-top: 4rpx;
+}
+
+.monitorTime {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.4;
+}
+
+.adviceCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.adviceCardHighlight {
+  border-left: 6rpx solid #FF7D00;
+  background: linear-gradient(90deg, #FFF7E6 0%, $color-bg-card 30%);
+}
+
+.adviceTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  line-height: 1.5;
+  margin-bottom: $spacing-sm;
+}
+
+.adviceItem {
+  display: flex;
+  align-items: flex-start;
+  padding: 6rpx 0;
+}
+
+.adviceDot {
+  width: 12rpx;
+  height: 12rpx;
+  background: $color-primary;
+  border-radius: $radius-round;
+  margin-right: $spacing-sm;
+  margin-top: 12rpx;
+  flex-shrink: 0;
+}
+
+.adviceDotHighlight {
+  background: #FF7D00;
+}
+
+.adviceText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}
+
+.summaryRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+}
+
+.tabs {
+  display: flex;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-xs;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.tabItem {
+  flex: 1;
+  text-align: center;
+  padding: $spacing-md 0;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  transition: all $transition-base;
+}
+
+.tabActive {
+  background: $color-primary;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.emptyTip {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  text-align: center;
+  padding: $spacing-xl 0;
+  line-height: 1.5;
+}

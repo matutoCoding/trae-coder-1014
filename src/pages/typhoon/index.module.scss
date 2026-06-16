@@ -235,8 +235,31 @@
   font-size: $font-size-sm;
   color: $color-text-secondary;
   line-height: 1.4;
+  margin-bottom: $spacing-xs;
+  display: block;
+}
+
+.progressHint {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  line-height: 1.4;
   margin-bottom: $spacing-md;
   display: block;
+}
+
+.miniProgressBar {
+  height: 10rpx;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: $radius-round;
+  overflow: hidden;
+  margin-top: $spacing-md;
+}
+
+.miniProgressFill {
+  height: 100%;
+  background: #fff;
+  border-radius: $radius-round;
+  transition: width $transition-base;
 }
 
 .taskCard {
@@ -268,6 +291,15 @@
   border-radius: $radius-round;
   font-weight: $font-weight-medium;
   line-height: 1.4;
+}
+
+.taskStatusClickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  &:active {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
 }
 
 .taskDone {

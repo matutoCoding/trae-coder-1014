@@ -9,6 +9,7 @@ import ListItem from '@/components/ListItem';
 import FunctionGrid from '@/components/FunctionGrid';
 import { dryingRecordList, finishedProductList } from '@/data/processing';
 import { harvestRecordList, harvestSummary } from '@/data/harvest';
+import { processingTraceList, getInventoryQty, inventoryList } from '@/data/inventory';
 import { FunctionItem } from '@/types';
 import classnames from 'classnames';
 
@@ -62,6 +63,20 @@ const ProcessingPage: React.FC = () => {
     }
   };
 
+  const getTraceStatus = (harvestId: string) => {
+    return processingTraceList.find(t => t.harvestId === harvestId);
+  };
+
+  const getStatusInfo = (status?: string) => {
+    switch (status) {
+      case 'harvested': return { text: '已采收待加工', color: '#FF7D00', step: 1 };
+      case 'drying': return { text: '晾晒/烘干中', color: '#722ED1', step: 2 };
+      case 'packed': return { text: '已打包待入库', color: '#0077B6', step: 3 };
+      case 'in_stock': return { text: '已入库可销售', color: '#00B42A', step: 4 };
+      default: return { text: '已采收待加工', color: '#FF7D00', step: 1 };
+    }
+  };
+
   const renderHarvest = () => (
     <>
       <View className={styles.summaryGrid}>
@@ -82,46 +97,69 @@ const ProcessingPage: React.FC = () => {
           color="#0077B6"
         />
         <StatCard
-          label="紫菜采收"
-          value={harvestSummary.seaweedCount}
+          label="加工中"
+          value={processingTraceList.filter(t => t.status === 'drying').length}
+          unit="批"
+          icon="⚙️"
+          bgColor="#F3E8FF"
+          color="#722ED1"
+        />
+        <StatCard
+          label="入库可售"
+          value={inventoryList.reduce((s, i) => s + i.quantity, 0)}
           unit="公斤"
-          icon="🌿"
+          icon="📦"
           bgColor="#E8FBF2"
           color="#00B42A"
         />
-        <StatCard
-          label="海带采收"
-          value={harvestSummary.kelpCount}
-          unit="公斤"
-          icon="🌊"
-          bgColor="#E6F0FF"
-          color="#0077B6"
-        />
       </View>
-      <SectionCard title="采收记录" subtitle={`共${harvestRecordList.length}条采收记录`}>
+      <SectionCard title="采收记录 · 加工追溯" subtitle={`共${harvestRecordList.length}条 · 点击查看加工进度`}>
         <View className={styles.listContainer} style={{ padding: 0, boxShadow: 'none' }}>
-          {harvestRecordList.map(record => (
-            <ListItem
-              key={record.id}
-              title={
-                <View style={{ display: 'flex', alignItems: 'center' }}>
-                  <Text className={classnames(styles.typeTag, getTypeClass(record.type))}>{record.type}</Text>
-                  <Text>{record.seaAreaName}</Text>
+          {harvestRecordList.map(record => {
+            const trace = getTraceStatus(record.id);
+            const statusInfo = getStatusInfo(trace?.status);
+            return (
+              <View className={styles.harvestTraceCard} key={record.id}>
+                <View className={styles.harvestHeader} onClick={() => Taro.navigateTo({ url: '/pages/harvest/index' })}>
+                  <View className={styles.harvestTitle}>
+                    <Text className={classnames(styles.typeTag, getTypeClass(record.type))}>{record.type}</Text>
+                    <Text className={styles.harvestArea}>{record.seaAreaName}</Text>
+                  </View>
+                  <Text className={styles.harvestStatus} style={{ color: statusInfo.color }}>● {statusInfo.text}</Text>
                 </View>
-              }
-              subtitle={`采收${record.quantity}${record.unit} · 品质${record.quality} · 操作员:${record.operator}`}
-              desc={`采收日期:${record.harvestDate}`}
-              tags={[{
-                text: record.quality,
-                bgColor: record.quality === '优' ? '#E8FBF2' : record.quality === '良' ? '#E6F7FF' : '#F2F3F5',
-                textColor: record.quality === '优' ? '#00B42A' : record.quality === '良' ? '#0077B6' : '#86909C'
-              }]}
-              onClick={() => {
-                console.log('[Processing] click harvest record:', record.id);
-                Taro.navigateTo({ url: '/pages/harvest/index' });
-              }}
-            />
-          ))}
+                <Text className={styles.harvestSubtitle}>
+                  采收{record.quantity}{record.unit} · 品质{record.quality} · 操作员{record.operator} · {record.harvestDate}
+                </Text>
+                <View className={styles.traceSteps}>
+                  <View className={styles.traceStep}>
+                    <View className={classnames(styles.stepDot, styles.stepDone)}>✓</View>
+                    <Text className={styles.stepText}>采收</Text>
+                  </View>
+                  <View className={classnames(styles.stepLine, trace && trace.status !== 'harvested' ? styles.stepLineDone : '')} />
+                  <View className={styles.traceStep}>
+                    <View className={classnames(styles.stepDot, trace && ['drying', 'packed', 'in_stock'].includes(trace.status) && styles.stepDone)}>
+                      {trace && ['drying', 'packed', 'in_stock'].includes(trace.status) ? '✓' : '2'}
+                    </View>
+                    <Text className={styles.stepText}>晾晒/烘干</Text>
+                  </View>
+                  <View className={classnames(styles.stepLine, trace && ['packed', 'in_stock'].includes(trace.status) ? styles.stepLineDone : '')} />
+                  <View className={styles.traceStep}>
+                    <View className={classnames(styles.stepDot, trace && ['packed', 'in_stock'].includes(trace.status) && styles.stepDone)}>
+                      {trace && ['packed', 'in_stock'].includes(trace.status) ? '✓' : '3'}
+                    </View>
+                    <Text className={styles.stepText}>分级打包</Text>
+                  </View>
+                  <View className={classnames(styles.stepLine, trace && trace.status === 'in_stock' ? styles.stepLineDone : '')} />
+                  <View className={styles.traceStep}>
+                    <View className={classnames(styles.stepDot, trace && trace.status === 'in_stock' && styles.stepDone)}>
+                      {trace && trace.status === 'in_stock' ? '✓' : '4'}
+                    </View>
+                    <Text className={styles.stepText}>入库可售</Text>
+                  </View>
+                </View>
+              </View>
+            );
+          })}
         </View>
       </SectionCard>
     </>
@@ -168,6 +206,21 @@ const ProcessingPage: React.FC = () => {
         <StatCard label="特级品" value={productStats.superGrade} unit="公斤" icon="🏆" bgColor="#FFE4CE" color="#D46B08" />
         <StatCard label="成品批次" value={finishedProductList.length} unit="批" icon="📋" bgColor="#F3E8FF" color="#722ED1" />
       </View>
+      <SectionCard title="成品库存" subtitle="可销售成品库存一览">
+        <View className={styles.inventoryGrid}>
+          {inventoryList.map(item => (
+            <View className={styles.inventoryItem} key={item.id}>
+              <View className={styles.inventoryHeader}>
+                <Text className={classnames(styles.typeTag, item.type === '紫菜' ? styles.typeLaver : styles.typeKelp)}>{item.type}</Text>
+                <Text className={classnames(styles.gradeTag, getGradeClass(item.grade))}>{item.grade}</Text>
+              </View>
+              <Text className={styles.inventoryQty}>{item.quantity}<Text className={styles.inventoryUnit}>{item.unit}</Text></Text>
+              <Text className={styles.inventoryLoc}>📍 {item.warehouse}</Text>
+              <Text className={styles.inventoryTime}>更新：{item.updateTime}</Text>
+            </View>
+          ))}
+        </View>
+      </SectionCard>
       <SectionCard title="成品分级" subtitle="成品分级打包记录">
         <View className={styles.listContainer} style={{ padding: 0, boxShadow: 'none' }}>
           {finishedProductList.map(product => (

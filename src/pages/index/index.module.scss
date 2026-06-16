@@ -101,6 +101,43 @@
   margin-bottom: $spacing-md;
 }
 
+.warningProgress {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.warningProgressBar {
+  height: 16rpx;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: $radius-round;
+  overflow: hidden;
+  margin-bottom: $spacing-xs;
+}
+
+.warningProgressFill {
+  height: 100%;
+  background: #fff;
+  border-radius: $radius-round;
+  transition: width $transition-base;
+}
+
+.warningProgressText {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.4;
+  font-weight: $font-weight-medium;
+}
+
+.warningMore {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: right;
+  margin-top: $spacing-sm;
+  line-height: 1.4;
+}
+
 .warningAdvice {
   background: rgba(255, 255, 255, 0.15);
   border-radius: $radius-md;

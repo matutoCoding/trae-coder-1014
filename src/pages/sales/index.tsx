@@ -3,7 +3,9 @@ import { View, Text } from '@tarojs/components';
 import styles from './index.module.scss';
 import PageHeader from '@/components/PageHeader';
 import SectionCard from '@/components/SectionCard';
+import StatCard from '@/components/StatCard';
 import { orderList, salesStats } from '@/data/sales';
+import { getInventoryQty, inventoryList } from '@/data/inventory';
 import classnames from 'classnames';
 
 type TabType = 'all' | 'pending' | 'shipped' | 'completed' | 'cancelled';
@@ -42,6 +44,12 @@ const SalesPage: React.FC = () => {
 
   const filteredOrders = getFilteredOrders();
 
+  const pendingQty = orderList
+    .filter(o => o.status === '待发货')
+    .reduce((s, o) => s + o.products.reduce((ps, p) => ps + p.quantity, 0), 0);
+
+  const totalStock = inventoryList.reduce((s, i) => s + i.quantity, 0);
+
   return (
     <View className={styles.pageContainer}>
       <PageHeader
@@ -72,6 +80,42 @@ const SalesPage: React.FC = () => {
           <Text className={styles.statLabel}>本月销售</Text>
         </View>
       </View>
+
+      <View className={styles.stockRow}>
+        <View className={styles.stockCard}>
+          <Text className={styles.stockIcon}>📦</Text>
+          <View className={styles.stockInfo}>
+            <Text className={styles.stockValue}>{totalStock}公斤</Text>
+            <Text className={styles.stockLabel}>成品库存总量</Text>
+          </View>
+        </View>
+        <View className={classnames(styles.stockCard, pendingQty > totalStock * 0.8 && styles.stockWarn)}>
+          <Text className={styles.stockIcon}>📤</Text>
+          <View className={styles.stockInfo}>
+            <Text className={styles.stockValue}>{pendingQty}公斤</Text>
+            <Text className={styles.stockLabel}>
+              待发货需用量
+              {pendingQty > totalStock * 0.8 ? ' · ⚠️库存紧张' : ''}
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      <SectionCard title="库存明细" subtitle="下单前请确认库存是否充足">
+        <View className={styles.inventoryGrid}>
+          {inventoryList.map(item => (
+            <View className={styles.inventoryItem} key={item.id}>
+              <View className={styles.inventoryHeader}>
+                <Text className={classnames(styles.invTypeTag, item.type === '紫菜' ? styles.invLaver : styles.invKelp)}>{item.type}</Text>
+                <Text className={classnames(styles.invGradeTag, item.grade === '特级' ? styles.invSuper : item.grade === '一级' ? styles.invFirst : styles.invSecond)}>
+                  {item.grade}
+                </Text>
+              </View>
+              <Text className={styles.inventoryQty}>{item.quantity}<Text className={styles.inventoryUnit}>{item.unit}</Text></Text>
+            </View>
+          ))}
+        </View>
+      </SectionCard>
 
       <View className={styles.categoryRow}>
         <View className={styles.categoryCard}>
@@ -113,12 +157,24 @@ const SalesPage: React.FC = () => {
           </View>
 
           <View className={styles.productList}>
-            {order.products.map((p, idx) => (
-              <View className={styles.productItem} key={idx}>
-                <Text className={styles.productName}>{p.productName}</Text>
-                <Text className={styles.productInfo}>{p.quantity}{p.unit} × ¥{p.unitPrice}</Text>
-              </View>
-            ))}
+            {order.products.map((p, idx) => {
+              const stockQty = getInventoryQty(p.type, p.grade);
+              const stockSufficient = stockQty >= p.quantity;
+              return (
+                <View className={styles.productItem} key={idx}>
+                  <View className={styles.productLeft}>
+                    <Text className={styles.productName}>{p.productName}</Text>
+                    <Text className={styles.productInfo}>{p.quantity}{p.unit} × ¥{p.unitPrice}</Text>
+                  </View>
+                  {order.status === '待发货' && (
+                    <View className={classnames(styles.stockTip, stockSufficient ? styles.stockOk : styles.stockAlert)}>
+                      {stockSufficient ? '✓ 可发' : '⚠️ 库存不足'}
+                      <Text className={styles.stockTipQty}>（库存{stockQty}{p.unit}）</Text>
+                    </View>
+                  )}
+                </View>
+              );
+            })}
           </View>
 
           <View className={styles.orderInfo}>

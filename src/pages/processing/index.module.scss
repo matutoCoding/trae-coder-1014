@@ -123,3 +123,144 @@
   box-shadow: $shadow-card;
   margin-bottom: $spacing-md;
 }
+
+.harvestTraceCard {
+  padding: $spacing-md 0;
+  border-bottom: 1rpx solid $color-divider;
+  &:last-child { border-bottom: none; }
+}
+
+.harvestHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-xs;
+}
+
+.harvestTitle {
+  display: flex;
+  align-items: center;
+}
+
+.harvestArea {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  line-height: 1.4;
+}
+
+.harvestStatus {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  line-height: 1.4;
+}
+
+.harvestSubtitle {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.5;
+  margin-bottom: $spacing-md;
+}
+
+.traceSteps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: $spacing-md $spacing-sm;
+}
+
+.traceStep {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.stepDot {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: $color-divider;
+  color: #fff;
+  font-size: $font-size-xs;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6rpx;
+  transition: all $transition-base;
+}
+
+.stepDone {
+  background: $color-primary;
+  font-weight: $font-weight-bold;
+}
+
+.stepText {
+  font-size: 20rpx;
+  color: $color-text-tertiary;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.stepLine {
+  flex: 1;
+  height: 4rpx;
+  background: $color-divider;
+  margin: 0 $spacing-xs 18rpx;
+  border-radius: 2rpx;
+}
+
+.stepLineDone {
+  background: $color-primary;
+}
+
+.inventoryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-sm;
+}
+
+.inventoryItem {
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  text-align: center;
+}
+
+.inventoryHeader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4rpx;
+  margin-bottom: $spacing-xs;
+}
+
+.inventoryQty {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  line-height: 1.2;
+}
+
+.inventoryUnit {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  font-weight: $font-weight-normal;
+  margin-left: 4rpx;
+}
+
+.inventoryLoc {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  line-height: 1.4;
+  margin-top: 4rpx;
+}
+
+.inventoryTime {
+  font-size: 20rpx;
+  color: $color-text-tertiary;
+  line-height: 1.4;
+  margin-top: 4rpx;
+}

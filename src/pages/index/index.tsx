@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
@@ -8,11 +8,20 @@ import FunctionGrid from '@/components/FunctionGrid';
 import { seaAreaList, overviewStats, typhoonWarning } from '@/data/seaArea';
 import { salesStats } from '@/data/sales';
 import { harvestSummary } from '@/data/harvest';
+import { appStore } from '@/store/appStore';
 import { FunctionItem } from '@/types';
 import classnames from 'classnames';
 
 const IndexPage: React.FC = () => {
   const [refreshing, setRefreshing] = useState(false);
+  const [tick, setTick] = useState(0);
+
+  useEffect(() => {
+    const unsubscribe = appStore.subscribe(() => setTick(t => t + 1));
+    return unsubscribe;
+  }, []);
+
+  const reinforceStats = appStore.getTaskStats();
 
   const functionItems: FunctionItem[] = [
     { key: 'seedling', name: '育苗管理', path: '/pages/seedling/index', bgColor: '#E6F7FF', textColor: '#0077B6' },
@@ -99,7 +108,7 @@ const IndexPage: React.FC = () => {
       </View>
 
       {typhoonWarning.active && (
-        <View className={styles.warningCard}>
+        <View className={styles.warningCard} onClick={() => Taro.navigateTo({ url: '/pages/typhoon/index' })}>
           <View className={styles.warningHeader}>
             <Text className={styles.warningIcon}>🌀</Text>
             <Text className={styles.warningTitle}>{typhoonWarning.name}</Text>
@@ -108,14 +117,23 @@ const IndexPage: React.FC = () => {
           <Text className={styles.warningInfo}>
             {typhoonWarning.distance} · {typhoonWarning.direction} · {typhoonWarning.expectedTime}
           </Text>
+          <View className={styles.warningProgress}>
+            <View className={styles.warningProgressBar}>
+              <View className={styles.warningProgressFill} style={{ width: `${reinforceStats.progress}%` }} />
+            </View>
+            <Text className={styles.warningProgressText}>
+              加固进度 {reinforceStats.progress}%（{reinforceStats.done}/{reinforceStats.total}项已完成）
+            </Text>
+          </View>
           <View className={styles.warningAdvice}>
-            {typhoonWarning.advice.map((item, idx) => (
+            {typhoonWarning.advice.slice(0, 2).map((item, idx) => (
               <View className={styles.adviceItem} key={idx}>
                 <View className={styles.adviceDot} />
                 <Text>{item}</Text>
               </View>
             ))}
           </View>
+          <Text className={styles.warningMore}>点击查看详情 →</Text>
         </View>
       )}
 

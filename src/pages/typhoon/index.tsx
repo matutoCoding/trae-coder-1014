@@ -1,19 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import styles from './index.module.scss';
 import PageHeader from '@/components/PageHeader';
 import { typhoonWarning, seaAreaList } from '@/data/seaArea';
+import { appStore } from '@/store/appStore';
 import classnames from 'classnames';
 
 type TabType = 'warning' | 'reinforce' | 'supplies';
-
-interface ReinforceTask {
-  id: string;
-  task: string;
-  status: 'pending' | 'doing' | 'done';
-  area: string;
-  assignee: string;
-}
 
 interface SupplyItem {
   id: string;
@@ -22,17 +15,6 @@ interface SupplyItem {
   status: 'sufficient' | 'shortage';
   location: string;
 }
-
-const reinforceTasks: ReinforceTask[] = [
-  { id: '1', task: '加固A区筏架缆绳', status: 'done', area: 'A区-东海湾', assignee: '张建国' },
-  { id: '2', task: '收紧B区浮球固定索', status: 'done', area: 'B区-西洋岛', assignee: '李海生' },
-  { id: '3', task: '加固C区养殖网帘', status: 'doing', area: 'C区-东冲口', assignee: '王明华' },
-  { id: '4', task: '检查D区锚泊系统', status: 'doing', area: 'D区-牙城湾', assignee: '李海生' },
-  { id: '5', task: '撤离E区海上人员', status: 'pending', area: 'E区-三沙港', assignee: '张建国' },
-  { id: '6', task: '加固加工厂仓库门窗', status: 'pending', area: '加工厂', assignee: '陈主管' },
-  { id: '7', task: '检查排水系统畅通', status: 'pending', area: '加工厂', assignee: '陈主管' },
-  { id: '8', task: '固定露天晾晒设备', status: 'doing', area: '晾晒场', assignee: '王明华' }
-];
 
 const supplyList: SupplyItem[] = [
   { id: '1', name: '缆绳', quantity: '200米', status: 'sufficient', location: 'A区仓库' },
@@ -47,13 +29,15 @@ const supplyList: SupplyItem[] = [
 
 const TyphoonPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('warning');
+  const [tick, setTick] = useState(0);
 
-  const taskStats = {
-    total: reinforceTasks.length,
-    done: reinforceTasks.filter(t => t.status === 'done').length,
-    doing: reinforceTasks.filter(t => t.status === 'doing').length,
-    pending: reinforceTasks.filter(t => t.status === 'pending').length
-  };
+  useEffect(() => {
+    const unsubscribe = appStore.subscribe(() => setTick(t => t + 1));
+    return unsubscribe;
+  }, []);
+
+  const reinforceTasks = appStore.getReinforceTasks();
+  const taskStats = appStore.getTaskStats();
 
   const supplyStats = {
     total: supplyList.length,
@@ -79,6 +63,20 @@ const TyphoonPage: React.FC = () => {
       case 'pending': return '待处理';
       default: return '待处理';
     }
+  };
+
+  const getNextStatus = (status: string) => {
+    switch (status) {
+      case 'pending': return 'doing';
+      case 'doing': return 'done';
+      case 'done': return 'pending';
+      default: return 'pending';
+    }
+  };
+
+  const handleStatusChange = (id: string, currentStatus: string) => {
+    const next = getNextStatus(currentStatus) as 'pending' | 'doing' | 'done';
+    appStore.updateTaskStatus(id, next);
   };
 
   const getSupplyStatusClass = (status: string) => {
@@ -108,6 +106,15 @@ const TyphoonPage: React.FC = () => {
             <Text className={styles.detailLabel}>预计影响</Text>
             <Text className={styles.detailValue}>{typhoonWarning.expectedTime}</Text>
           </View>
+          <View className={styles.detailRow}>
+            <Text className={styles.detailLabel}>加固进度</Text>
+            <Text className={styles.detailValue}>
+              {taskStats.progress}%（{taskStats.done}/{taskStats.total}项）
+            </Text>
+          </View>
+        </View>
+        <View className={styles.miniProgressBar}>
+          <View className={styles.miniProgressFill} style={{ width: `${taskStats.progress}%` }} />
         </View>
       </View>
 
@@ -159,16 +166,20 @@ const TyphoonPage: React.FC = () => {
       </View>
 
       <View className={styles.progressBar}>
-        <View className={styles.progressFill} style={{ width: `${(taskStats.done / taskStats.total) * 100}%` }} />
+        <View className={styles.progressFill} style={{ width: `${taskStats.progress}%` }} />
       </View>
-      <Text className={styles.progressText}>加固进度：{Math.round((taskStats.done / taskStats.total) * 100)}%</Text>
+      <Text className={styles.progressText}>加固进度：{taskStats.progress}%</Text>
+      <Text className={styles.progressHint}>💡 点击状态标签可切换：待处理 → 进行中 → 已完成</Text>
 
       {reinforceTasks.map(task => (
         <View className={styles.taskCard} key={task.id}>
           <View className={styles.taskHeader}>
             <Text className={styles.taskName}>{task.task}</Text>
-            <Text className={classnames(styles.taskStatus, getStatusClass(task.status))}>
-              {getStatusText(task.status)}
+            <Text
+              className={classnames(styles.taskStatus, styles.taskStatusClickable, getStatusClass(task.status))}
+              onClick={() => handleStatusChange(task.id, task.status)}
+            >
+              {getStatusText(task.status)} ↻
             </Text>
           </View>
           <View className={styles.taskMeta}>
