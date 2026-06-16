@@ -1,0 +1,79 @@
+@use '@/styles/variables.scss' as *;
+
+.listItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-lg 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.clickable {
+  transition: all $transition-fast;
+
+  &:active {
+    opacity: 0.7;
+    background: $color-bg-hover;
+    margin: 0 #{-$spacing-lg};
+    padding-left: $spacing-lg;
+    padding-right: $spacing-lg;
+    border-radius: $radius-md;
+  }
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  line-height: 1.5;
+  @include text-ellipsis;
+}
+
+.tags {
+  display: flex;
+  gap: $spacing-xs;
+  flex-shrink: 0;
+  margin-left: $spacing-sm;
+}
+
+.tag {
+  font-size: $font-size-xs;
+  padding: 4rpx $spacing-sm;
+  border-radius: $radius-xs;
+  line-height: 1.4;
+}
+
+.subtitle {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-top: $spacing-xs;
+  line-height: 1.5;
+  display: block;
+}
+
+.desc {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-top: $spacing-xs;
+  line-height: 1.5;
+  display: block;
+}
+
+.right {
+  flex-shrink: 0;
+  margin-left: $spacing-md;
+}

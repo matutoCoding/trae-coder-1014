@@ -1,0 +1,184 @@
+@use '@/styles/variables.scss' as *;
+
+.filters {
+  display: flex;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.filterItem {
+  padding: $spacing-sm $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  box-shadow: $shadow-card;
+}
+
+.filterActive {
+  background: $color-primary;
+  color: $color-text-white;
+}
+
+.statsRow {
+  display: flex;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.statCard {
+  flex: 1;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  text-align: center;
+}
+
+.statValue {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  line-height: 1.2;
+}
+
+.statUnit {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  font-weight: $font-weight-normal;
+  margin-left: 4rpx;
+}
+
+.statLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-top: $spacing-xs;
+  line-height: 1.4;
+}
+
+.batchCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.batchHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-md;
+}
+
+.batchTitle {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+}
+
+.batchNo {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  line-height: 1.4;
+}
+
+.typeTag {
+  padding: 4rpx $spacing-sm;
+  border-radius: $radius-xs;
+  font-size: $font-size-xs;
+  line-height: 1.4;
+}
+
+.typeLaver {
+  background: $color-tag-seedling-bg;
+  color: $color-tag-seedling-text;
+}
+
+.typeKelp {
+  background: $color-tag-farming-bg;
+  color: $color-tag-farming-text;
+}
+
+.qualityTag {
+  padding: 4rpx $spacing-sm;
+  border-radius: $radius-xs;
+  font-size: $font-size-xs;
+  line-height: 1.4;
+}
+
+.qualityExcellent {
+  background: #E8FBF2;
+  color: #00B42A;
+}
+
+.qualityGood {
+  background: #E6F7FF;
+  color: #0077B6;
+}
+
+.qualityNormal {
+  background: #F2F3F5;
+  color: #86909C;
+}
+
+.statusBadge {
+  padding: 6rpx $spacing-md;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  line-height: 1.4;
+  font-weight: $font-weight-medium;
+}
+
+.statusNurturing {
+  background: #FFF7E6;
+  color: #FF7D00;
+}
+
+.statusReady {
+  background: #E8FBF2;
+  color: #00B42A;
+}
+
+.statusDeployed {
+  background: #E6F7FF;
+  color: #0077B6;
+}
+
+.dataGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.dataItem {
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+}
+
+.dataLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  line-height: 1.4;
+}
+
+.dataValue {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  line-height: 1.5;
+  margin-top: 4rpx;
+}
+
+.remark {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.6;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}

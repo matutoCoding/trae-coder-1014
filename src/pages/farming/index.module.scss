@@ -1,0 +1,166 @@
+@use '@/styles/variables.scss' as *;
+
+.tabs {
+  display: flex;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-xs;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.tabItem {
+  flex: 1;
+  text-align: center;
+  padding: $spacing-md 0;
+  border-radius: $radius-md;
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  transition: all $transition-base;
+}
+
+.tabActive {
+  background: $color-primary;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.summaryRow {
+  display: flex;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.summaryCard {
+  flex: 1;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  text-align: center;
+}
+
+.summaryValue {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  line-height: 1.2;
+}
+
+.summaryLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-top: $spacing-xs;
+  line-height: 1.4;
+}
+
+.summaryUnit {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  font-weight: $font-weight-normal;
+  margin-left: 4rpx;
+}
+
+.listContainer {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: 0 $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.batchType {
+  display: inline-flex;
+  padding: 4rpx $spacing-sm;
+  border-radius: $radius-xs;
+  font-size: $font-size-xs;
+  line-height: 1.4;
+  margin-right: $spacing-xs;
+}
+
+.typeLaver {
+  background: $color-tag-seedling-bg;
+  color: $color-tag-seedling-text;
+}
+
+.typeKelp {
+  background: $color-tag-farming-bg;
+  color: $color-tag-farming-text;
+}
+
+.qualityTag {
+  display: inline-block;
+  padding: 4rpx $spacing-sm;
+  border-radius: $radius-xs;
+  font-size: $font-size-xs;
+  line-height: 1.4;
+  margin-right: $spacing-xs;
+}
+
+.qualityExcellent {
+  background: #E8FBF2;
+  color: #00B42A;
+}
+
+.qualityGood {
+  background: #E6F7FF;
+  color: #0077B6;
+}
+
+.qualityNormal {
+  background: #F2F3F5;
+  color: #86909C;
+}
+
+.statusBadge {
+  font-size: $font-size-xs;
+  padding: 6rpx $spacing-sm;
+  border-radius: $radius-sm;
+  line-height: 1.4;
+}
+
+.statusNurturing {
+  background: #FFF7E6;
+  color: #FF7D00;
+}
+
+.statusReady {
+  background: #E8FBF2;
+  color: #00B42A;
+}
+
+.statusDeployed {
+  background: #E6F7FF;
+  color: #0077B6;
+}
+
+.monitorRow {
+  display: flex;
+  gap: $spacing-lg;
+  margin-top: $spacing-sm;
+}
+
+.monitorItem {
+  flex: 1;
+}
+
+.monitorLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  line-height: 1.4;
+}
+
+.monitorValue {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  line-height: 1.5;
+  margin-top: 4rpx;
+}
+
+.monitorUnit {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  font-weight: $font-weight-normal;
+  margin-left: 4rpx;
+}

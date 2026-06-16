@@ -1,0 +1,32 @@
+@use '@/styles/variables.scss' as *;
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: $spacing-lg 0;
+  padding-top: $spacing-xl;
+}
+
+.left {
+  flex: 1;
+}
+
+.title {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  line-height: 1.3;
+  display: block;
+}
+
+.subtitle {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  margin-top: $spacing-xs;
+  display: block;
+}
+
+.right {
+  flex-shrink: 0;
+}

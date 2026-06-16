@@ -1,0 +1,40 @@
+@use '@/styles/variables.scss' as *;
+
+.grid {
+  display: grid;
+  gap: $spacing-lg;
+}
+
+.gridItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.85;
+    transform: scale(0.97);
+  }
+}
+
+.iconBox {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: $radius-lg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: $spacing-sm;
+}
+
+.icon {
+  font-size: 44rpx;
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  line-height: 1.4;
+  text-align: center;
+}
